@@ -1,9 +1,16 @@
 <script>
   import { supabase } from './lib/supabase.js'
   import Login from './lib/Login.svelte'
+  import Sidebar from './lib/Sidebar.svelte'
+  import Dashboard from './lib/pages/Dashboard.svelte'
+  import Upload from './lib/pages/Upload.svelte'
+  import Task from './lib/pages/Task.svelte'
+  import Reason from './lib/pages/Reason.svelte'
+  import Pengaturan from './lib/pages/Pengaturan.svelte'
 
   let session = $state(null)
   let email = $state('')
+  let page = $state('dashboard')
 
   supabase.auth.getSession().then(({ data }) => {
     session = data.session
@@ -13,18 +20,28 @@
     session = data?.session ?? null
     email = data?.session?.user?.email ?? ''
   })
-
-  async function logout() { await supabase.auth.signOut() }
 </script>
 
 {#if session}
-  <main class="min-h-screen flex items-center justify-center bg-gray-50">
-    <div class="text-center space-y-4">
-      <h1 class="text-2xl font-bold">Dashboard</h1>
-      <p class="text-gray-500">{email}</p>
-      <button onclick={logout} class="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700">Logout</button>
-    </div>
-  </main>
+  <div class="min-h-screen bg-gray-50">
+    <Sidebar bind:page {email} />
+    <main
+      class="min-h-screen p-8 transition-[margin-left] duration-200 ease-out"
+      style="margin-left: var(--sidebar-w, 240px)"
+    >
+      {#if page === 'dashboard'}
+        <Dashboard {email} />
+      {:else if page === 'upload'}
+        <Upload />
+      {:else if page === 'task'}
+        <Task />
+      {:else if page === 'reason'}
+        <Reason />
+      {:else if page === 'pengaturan'}
+        <Pengaturan />
+      {/if}
+    </main>
+  </div>
 {:else}
   <Login />
 {/if}

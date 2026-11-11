@@ -15,6 +15,12 @@ Update terakhir: 2026-11-11
 - [x] User admin dibuat di Supabase Auth, email confirmed — kredensial di `PRD.md` §6.1
 - [x] Remember me: storage adapter routing localStorage (centang) vs sessionStorage (hilang) — `src/lib/supabase.js`
 - [x] Verifikasi: `npm run build` lolos + smoke test login REST Supabase (200, session terbit)
+- [x] App shell pasca-login (2026-11-11):
+  - Sidebar kiri: hamburger expand/collapse (240px ↔ 72px, transisi 200ms), state di localStorage `pack01_sidebar`
+  - Menu: Dashboard, Upload, Task, Reason, Pengaturan (ikon SVG inline, item aktif highlight biru)
+  - Footer sidebar: email user + Logout (`supabase.auth.signOut`)
+  - Page switch tanpa router: `page` $state di `App.svelte`
+  - 5 halaman placeholder (Dashboard punya 3 kartu stat `—` untuk data nanti)
 
 ## Keputusan
 
