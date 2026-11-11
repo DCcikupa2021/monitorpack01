@@ -1,6 +1,6 @@
 # Progress — Monitoring Pack01
 
-Update terakhir: 2026-11-11
+Update terakhir: 2026-11-12
 
 ## Selesai
 
@@ -22,6 +22,13 @@ Update terakhir: 2026-11-11
   - Page switch tanpa router: `page` $state di `App.svelte`
   - 5 halaman placeholder (Dashboard punya 3 kartu stat `—` untuk data nanti)
 - [x] Fix session persistence (2026-11-11): flag default diingat (bukan hanya `'1'`), heal token tersesat antar localStorage/sessionStorage saat app boot, login bersihkan store lawan. Terverifikasi harness Node: remember=1 reload OK, remember=0 reload OK, stranded token recovered, stale token dibuang.
+- [x] Tabel Supabase untuk upload (2026-11-11): `packing_reports` (20 kolom) + `scale_transactions` (21 kolom), kolom snake_case sesuai header Excel, RLS select/insert/delete untuk `authenticated`.
+- [x] Fix tabel salah project (2026-11-12): migration awal kena project `xuyzgdiwevfudttuxhrj` (MCP lama), app pakai `owkvioooumcipiyldnmx` → PostgREST PGRST205. MCP dipindah ke project owkv, DDL+RLS ulang via `docs/supabase-upload-tables.sql`, REST anon 200. Project xuyz masih punya salinan tabel lama (diabaikan).
+- [x] Parser Excel (`src/lib/excel.js`): deteksi otomatis header — scan 15 baris pertama, `WAVE NUMBER`+`SHIPMENT ID` → packing (header row 3), `INTERNAL ID`+`REFERENCE ID`+`ACTIVITY DATE TIME` → scale (header row 7). Kolom header blank (merge BC/WX) dibuang otomatis. Smoke test lolos di 2 file asli (371 + 187.350 baris). Filter scale: hanya `WORK GROUP` = `Picking` (114.910 baris; Shipping/Receiving/kosong dibuang).
+- [x] Insert Supabase (`src/lib/upload.js`): `processUpload(files)` — kelompokkan per jenis → hapus seluruh data lama tabel → insert chunk 1000. Koersi number/date/text sesuai DDL, `created_by` dari session. Setiap Proses = data selalu baru.
+- [x] Halaman Upload (`src/lib/pages/Upload.svelte`): multi-file (drop/pilih banyak, append), list per file (badge jenis, baris·kolom, hapus per entry, "Bersihkan semua"), preview collapsible per file (scroll ~5 baris, cap 1.000 baris pertama), tombol **Proses** + alert jumlah insert per tabel.
+- [x] Fix bug session logout (2026-11-12): akar = callback `onAuthStateChange` salah baca bentuk (supabase kirim Session langsung, kode baca `data?.session` → selalu undefined → null tiap event; F5 lolos karena `getSession().then` resolve paling akhir). Fix: baca `data` langsung + hanya `SIGNED_OUT` yang menghapus state. Remember Me bukan penyebab.
+- [x] `npm audit`: `xlsx` → 0.20.3 via SheetJS CDN (2 vuln high hilang), parser smoke test ulang lolos. Ulang 2026-11-12 (pra-push GitHub): 3 low dev-only — `deepmerge` GHSA-gcqx-w48m-w2h4 (prototype poisoning) lewat rantai `@sveltejs/vite-plugin-svelte` → `vite-plugin-svelte-inspector`; `fixAvailable: false`, tidak masuk bundle produksi.
 
 ## Keputusan
 
@@ -45,15 +52,22 @@ npm run build   # produksi → dist/
 
 ## Next
 
-1. Sidebar: hamburger expand/collapse, 5 menu (Dashboard, Upload, Task, Reason, Pengaturan).
-2. Dashboard isi (kartu ringkasan).
-3. Upload Excel — format file bahas terpisah (PRD §8.1).
-4. Tabel Task (TR, Item, Qty, Days) + detail + Reason.
-5. Pengaturan: kelola user, mode gelap/terang.
-6. Review copy login (heading "Masuk ke akun Anda" ditambahkan designer, bisa diubah).
+1. Dashboard isi (kartu ringkasan).
+2. Menu Task: tabel dari `packing_reports`/`scale_transactions` (TR, Item, Qty, Days) + detail + Reason.
+3. Pengaturan: kelola user, mode gelap/terang.
+4. Uji upload end-to-end di browser (Proses → cek baris masuk di Supabase).
+5. Review copy login (heading "Masuk ke akun Anda" ditambahkan designer, bisa diubah).
 
 ## Risiko / catatan
 
 - `PRD.md` berisi password login — pastikan tetap di `.gitignore` sebelum push.
-- Belum ada uji browser manual (animasi/logo hanya diverifikasi lewat build).
+- Belum ada uji browser manual untuk upload + fix session (verifikasi build + smoke test Node saja).
+- Upload file scale (~187k baris) = ±188 request chunk, bisa ~1–2 menit. Gagal di tengah = data lama sudah terhapus, sebagian data baru masuk (tanpa rollback) — sesuai desain replace.
 - Deploy Cloudflare Pages butuh env var di sana, bukan file `.env`.
+- `Debugging Code.txt` di root = panduan debug global, bukan bagian build.
+
+## Debugging tooling (2026-11-11)
+
+- [x] Logger auth DEV-only (`src/lib/authDebug.js`) + badge status sesi — nol perubahan produksi
+- [x] `docs/BUG.md` — template laporan + standar investigasi + contoh kasus session
+- [x] `package-lock.json` dikunci (source node_modules = versi lockfile)

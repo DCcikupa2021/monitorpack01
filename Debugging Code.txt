@@ -1,0 +1,53 @@
+=== DEBUGGING CODE ===
+Dokumen global, berlaku untuk semua proyek (Svelte 5, Vite, Tailwind, Supabase, Cloudflare).
+Baca bagian ini saat ada bug. Bisa ditempel ke AGENTS.md atau dibaca manual.
+
+--- ATURAN MAIN (buat agent) ---
+1. Bug → baca docs/BUG.md dulu (playbook + contoh kasus). Jangan mulai dari nol.
+2. Reproduksi dulu sebelum baca kode. Tidak bisa reproduksi → tanya user gejala spesifik: kapan muncul, kapan hilang, langkah persis.
+3. Jangan ubah kode sebelum tahu akar. Tebakan = bug baru.
+4. Jangan poll tool status berulang dengan argumen identik (infinite loop). Maksimal 2x cek, lalu: cancel + resume dengan instruksi baru, atau ganti pendekatan.
+5. Debug read-only dulu: grep, baca source, minta log. Edit hanya setelah hipotesis punya bukti file:line.
+6. Selesai fix → build wajib lolos (npm run build / vite build).
+7. Akar ketemu → catat ke progress.md + docs/BUG.md (contoh nyata), biar tidak terulang di sesi berikutnya.
+
+--- GEJALA → JALUR CEPAT (global) ---
+- Login/session aneh (keluar sendiri, refresh masuk lagi, beda hasil tab vs F5):
+  → Cek bentuk data callback library auth (Supabase onAuthStateChange kirim Session langsung, BUKAN {session}).
+  → Kasus nyata: salah baca data?.session → null terus → login form muncul tiap event.
+  → Bukti: log nama event + ada/tidaknya session di console.
+- Data salah / parse aneh (Excel, JSON, API):
+  → Cek urutan baris/kolom, merged cell, tipe data (string vs number vs Date).
+  → Bukti: 1 file sampel kecil, dump 5 baris pertama via script Node, bandingkan ekspektasi vs kenyataan.
+- Insert/update ke backend gagal:
+  → Baca pesan error baris/field mana, cek RLS policy + tipe kolom (string masuk kolom number = gagal).
+  → Bukti: kirim 1 baris dulu, kalau lolos → masalah di data, kalau gagal → masalah di skema/policy.
+- Build gagal:
+  → Baca error PERTAMA saja (error lain biasanya efek domino).
+- Dependency / vulnerability:
+  → npm audit + kunci package-lock.json. Source di node_modules = versi lockfile, jangan asumsi versi.
+- Browser-only bug (jalan di dev, hilang di build, atau sebaliknya):
+  → Bedakan jalur DEV vs PROD: import.meta.env.DEV, code-splitting, cache.
+- Timeout / hang / infinite loop:
+  → Cek tool call berulang identik, Promise tanpa await, loop tanpa exit condition.
+
+--- CARA DAPAT BUKTI CEPAT ---
+- Kode: grep/AST search langsung ke file tersangka. Jangan baca seluruh folder.
+- Runtime: DevTools Console filter kata kunci, Network tab cek request gagal (status + payload).
+- Library aneh: baca source di node_modules sesuai versi lockfile. Jangan tebak API dari ingatan.
+- Reproduksi butuh browser/lingkungan: minta user tempel output console/network. Jangan menebak.
+- Bug tidak bisa direproduksi → minta: langkah persis + screenshot + waktu kejadian. Tanpa itu, jangan lanjut menebak.
+
+--- FILE YANG DICARI DI SETIAP PROYEK ---
+- docs/BUG.md      → template laporan + playbook (buat kalau belum ada)
+- progress.md      → keputusan lama + status fitur (jangan ulangi diskusi selesai)
+- README.md        → cara jalan + versi dependency
+- AGENTS.md        → aturan main proyek
+- package-lock.json → kunci versi dependency
+
+--- CONTOH KASUS (selalu tambahkan yang baru) ---
+1. Session logout palsu (2026-11-11, Svelte + Supabase):
+   Gejala: pindah tab → login form; F5 → masuk lagi.
+   Akar: onAuthStateChange kirim Session langsung, kode baca data?.session (selalu undefined → null).
+   Fix: baca data langsung; hanya event SIGNED_OUT yang menghapus state.
+   Pelajaran: verifikasi bentuk data callback dari source library, bukan dari asumsi.
