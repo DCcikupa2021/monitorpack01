@@ -21,6 +21,7 @@ Update terakhir: 2026-11-11
   - Footer sidebar: email user + Logout (`supabase.auth.signOut`)
   - Page switch tanpa router: `page` $state di `App.svelte`
   - 5 halaman placeholder (Dashboard punya 3 kartu stat `—` untuk data nanti)
+- [x] Fix session persistence (2026-11-11): flag default diingat (bukan hanya `'1'`), heal token tersesat antar localStorage/sessionStorage saat app boot, login bersihkan store lawan. Terverifikasi harness Node: remember=1 reload OK, remember=0 reload OK, stranded token recovered, stale token dibuang.
 
 ## Keputusan
 

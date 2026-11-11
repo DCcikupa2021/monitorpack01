@@ -15,7 +15,9 @@
     }
     loading = true
     localStorage.setItem(REMEMBER_KEY, remember ? '1' : '0')
-    if (!remember) localStorage.removeItem(SB_AUTH_KEY)
+    // hapus token di store lawan supaya tidak tersesat di penyimpanan yang salah
+    if (remember) sessionStorage.removeItem(SB_AUTH_KEY)
+    else localStorage.removeItem(SB_AUTH_KEY)
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
     loading = false
     if (error) {
