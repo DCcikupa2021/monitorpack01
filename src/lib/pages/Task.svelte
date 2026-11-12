@@ -19,13 +19,24 @@
   onMount(async () => {
     const { data, error: err } = await supabase
       .from('packing_reports')
-      .select('shipment_id, item, description, total_qty')
+      .select('shipment_id, to_site_name, total_qty')
       .order('created_at', { ascending: false })
 
     if (err) {
       error = err.message
     } else {
-      rows = data ?? []
+      // group per TR: Qty = SUM total_qty, Store = to_site_name baris pertama per TR
+      const byTr = new Map()
+      for (const r of data ?? []) {
+        const key = r.shipment_id ?? ''
+        const g = byTr.get(key)
+        if (g) {
+          g.qty += Number(r.total_qty) || 0
+        } else {
+          byTr.set(key, { shipment_id: r.shipment_id, store: r.to_site_name, qty: Number(r.total_qty) || 0 })
+        }
+      }
+      rows = [...byTr.values()]
     }
     loading = false
   })
@@ -50,20 +61,23 @@
         <table class="w-full min-w-max border-separate border-spacing-0 text-left">
           <thead>
             <tr>
+              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Store</th>
               <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">TR</th>
-              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Item No</th>
-              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Item Name</th>
               <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Qty</th>
               <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Aging</th>
             </tr>
           </thead>
           <tbody>
             {#each rows as row, i (i)}
-              <tr class="transition-colors odd:bg-white even:bg-gray-50 hover:bg-blue-50/60">
+              <tr
+                class="cursor-pointer transition-colors odd:bg-white even:bg-gray-50 hover:bg-blue-50/60"
+                onclick={() => {
+                  location.hash = `/task/detail?id=${encodeURIComponent(row.shipment_id ?? '')}`
+                }}
+              >
+                <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{row.store ?? ''}</td>
                 <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{fmtTR(row.shipment_id)}</td>
-                <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{row.item}</td>
-                <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{row.description}</td>
-                <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{row.total_qty}</td>
+                <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{row.qty}</td>
                 <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700"></td>
               </tr>
             {/each}

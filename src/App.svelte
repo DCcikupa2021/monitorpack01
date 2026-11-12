@@ -5,6 +5,7 @@
   import Dashboard from './lib/pages/Dashboard.svelte'
   import Upload from './lib/pages/Upload.svelte'
   import Task from './lib/pages/Task.svelte'
+  import TaskDetail from './lib/pages/TaskDetail.svelte'
   import Reason from './lib/pages/Reason.svelte'
   import Pengaturan from './lib/pages/Pengaturan.svelte'
   import { logAuthEvent, showSessionBadge } from './lib/authDebug.js'
@@ -12,6 +13,29 @@
   let session = $state(null)
   let email = $state('')
   let page = $state('dashboard')
+  let detailId = $state('')
+
+  // route detail: #/task/detail?id=<shipment_id> — bukan menu sidebar, hanya dari klik baris Task
+  function syncHash() {
+    const m = /^#\/task\/detail(?:\?|$)/.exec(location.hash)
+    if (m) {
+      detailId = new URLSearchParams(location.hash.split('?')[1] ?? '').get('id') ?? ''
+      page = 'task-detail'
+    } else if (page === 'task-detail') {
+      page = 'task'
+      detailId = ''
+    }
+  }
+
+  window.addEventListener('hashchange', syncHash)
+  syncHash()
+
+  // pindah halaman via sidebar → buang hash detail (replaceState supaya back browser tetap ke list)
+  $effect(() => {
+    if (page !== 'task-detail' && location.hash) {
+      history.replaceState(null, '', location.pathname + location.search)
+    }
+  })
 
   supabase.auth.getSession().then(({ data }) => {
     session = data.session
@@ -48,6 +72,13 @@
         <Upload />
       {:else if page === 'task'}
         <Task />
+      {:else if page === 'task-detail'}
+        <TaskDetail
+          id={detailId}
+          onback={() => {
+            location.hash = ''
+          }}
+        />
       {:else if page === 'reason'}
         <Reason />
       {:else if page === 'pengaturan'}

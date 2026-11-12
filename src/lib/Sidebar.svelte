@@ -84,7 +84,7 @@
         onclick={() => (page = item.id)}
         class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-700/30 {expanded
           ? ''
-          : 'justify-center'} {page === item.id
+          : 'justify-center'} {page === item.id || (item.id === 'task' && page === 'task-detail')
           ? 'bg-blue-700 text-white shadow-sm'
           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}"
       >

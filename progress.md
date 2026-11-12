@@ -31,6 +31,8 @@ Update terakhir: 2026-11-12
 - [x] `npm audit`: `xlsx` → 0.20.3 via SheetJS CDN (2 vuln high hilang), parser smoke test ulang lolos. Ulang 2026-11-12 (pra-push GitHub): 3 low dev-only — `deepmerge` GHSA-gcqx-w48m-w2h4 (prototype poisoning) lewat rantai `@sveltejs/vite-plugin-svelte` → `vite-plugin-svelte-inspector`; `fixAvailable: false`, tidak masuk bundle produksi.
 - [x] Menu Task tabel `packing_reports` (2026-11-12, PRD v0.3): kolom TR (`shipment_id`) / Item No (`item`) / Item Name (`description`) / Qty (`total_qty`) / Aging (kosong, diisi nanti). Fetch semua baris onMount, order `created_at` desc, state loading/error/empty, style konsisten Upload (`src/lib/pages/Task.svelte`). `npm run build` lolos. Belum uji browser manual.
 - [x] Format TR display-only (2026-11-12): `fmtTR` di `Task.svelte` — `PREFIX-SEQ` via regex `^([A-Za-z]+)(\d+)$`, stem 7 digit pertama sisanya `parseInt` (leading zero hilang, seq tumbuh 7–8 digit aman); kosong/null → `blank`; format tak dikenal → raw. Raw `shipment_id` di Supabase tidak diubah. Smoke test 9 kasus (6 contoh user + blank/null/fallback) lolos, `npm run build` lolos.
+- [x] Task: header Store/TR/Qty/Aging + group per TR (2026-11-12, PRD §6.4): Store=`to_site_name` (baris pertama per TR), TR=`shipment_id` via `fmtTR`, Qty=`SUM(total_qty)` per TR (SUMIF), Aging kosong. Fetch `shipment_id, to_site_name, total_qty`, group di client via Map. `npm run build` + smoke test group lolos. Item No/Item Name dihapus.
+- [x] Detail Task via route hash (2026-11-12, PRD §6.4): klik baris list → `#/task/detail?id=<shipment_id>` (bukan menu sidebar; hash aman di Cloudflare Pages tanpa rewrite). `TaskDetail.svelte`: fetch per TR — field horizontal (Aging/Location/User/Reason kosong, TR raw tanpa fmtTR, Store, Site Code=`to_site_id`, Lotable=`lottable_2`, Type TR, Comment, No Wave=`wave_number`, Status1) + sub-tabel item (No Item/Item Name/Qty, kode item sama digabung, qty dijumlah). Back = clear hash. Sidebar highlight Task tetap saat di detail. `npm run build` lolos. Belum uji browser.
 
 ## Keputusan
 
@@ -55,7 +57,7 @@ npm run build   # produksi → dist/
 ## Next
 
 1. Dashboard isi (kartu ringkasan).
-2. Menu Task: isi Aging + detail klik baris + Reason. (Tabel `packing_reports` dasar sudah ada — 2026-11-12.)
+2. Menu Task: isi Aging/Location/User/Reason + Reason flow. (List group-per-TR + detail route hash sudah ada — 2026-11-12.)
 3. Pengaturan: kelola user, mode gelap/terang.
 4. Uji upload end-to-end di browser (Proses → cek baris masuk di Supabase).
 5. Review copy login (heading "Masuk ke akun Anda" ditambahkan designer, bisa diubah).
