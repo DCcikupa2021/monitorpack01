@@ -29,6 +29,8 @@ Update terakhir: 2026-11-12
 - [x] Halaman Upload (`src/lib/pages/Upload.svelte`): multi-file (drop/pilih banyak, append), list per file (badge jenis, baris·kolom, hapus per entry, "Bersihkan semua"), preview collapsible per file (scroll ~5 baris, cap 1.000 baris pertama), tombol **Proses** + alert jumlah insert per tabel.
 - [x] Fix bug session logout (2026-11-12): akar = callback `onAuthStateChange` salah baca bentuk (supabase kirim Session langsung, kode baca `data?.session` → selalu undefined → null tiap event; F5 lolos karena `getSession().then` resolve paling akhir). Fix: baca `data` langsung + hanya `SIGNED_OUT` yang menghapus state. Remember Me bukan penyebab.
 - [x] `npm audit`: `xlsx` → 0.20.3 via SheetJS CDN (2 vuln high hilang), parser smoke test ulang lolos. Ulang 2026-11-12 (pra-push GitHub): 3 low dev-only — `deepmerge` GHSA-gcqx-w48m-w2h4 (prototype poisoning) lewat rantai `@sveltejs/vite-plugin-svelte` → `vite-plugin-svelte-inspector`; `fixAvailable: false`, tidak masuk bundle produksi.
+- [x] Menu Task tabel `packing_reports` (2026-11-12, PRD v0.3): kolom TR (`shipment_id`) / Item No (`item`) / Item Name (`description`) / Qty (`total_qty`) / Aging (kosong, diisi nanti). Fetch semua baris onMount, order `created_at` desc, state loading/error/empty, style konsisten Upload (`src/lib/pages/Task.svelte`). `npm run build` lolos. Belum uji browser manual.
+- [x] Format TR display-only (2026-11-12): `fmtTR` di `Task.svelte` — `PREFIX-SEQ` via regex `^([A-Za-z]+)(\d+)$`, stem 7 digit pertama sisanya `parseInt` (leading zero hilang, seq tumbuh 7–8 digit aman); kosong/null → `blank`; format tak dikenal → raw. Raw `shipment_id` di Supabase tidak diubah. Smoke test 9 kasus (6 contoh user + blank/null/fallback) lolos, `npm run build` lolos.
 
 ## Keputusan
 
@@ -53,7 +55,7 @@ npm run build   # produksi → dist/
 ## Next
 
 1. Dashboard isi (kartu ringkasan).
-2. Menu Task: tabel dari `packing_reports`/`scale_transactions` (TR, Item, Qty, Days) + detail + Reason.
+2. Menu Task: isi Aging + detail klik baris + Reason. (Tabel `packing_reports` dasar sudah ada — 2026-11-12.)
 3. Pengaturan: kelola user, mode gelap/terang.
 4. Uji upload end-to-end di browser (Proses → cek baris masuk di Supabase).
 5. Review copy login (heading "Masuk ke akun Anda" ditambahkan designer, bisa diubah).
