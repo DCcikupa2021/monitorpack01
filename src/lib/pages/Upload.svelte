@@ -168,7 +168,7 @@
     }}
     ondragleave={onDragLeave}
     ondrop={onDrop}
-    class="cursor-pointer rounded-xl border bg-white p-6 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-700/30 {dragging
+    class="cursor-pointer rounded-xl border bg-white p-6 shadow-sm transition hover:border-blue-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-700/30 {dragging
       ? 'border-blue-600 bg-blue-50/60'
       : 'border-gray-100'}"
   >

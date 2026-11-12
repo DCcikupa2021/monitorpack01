@@ -55,7 +55,7 @@
     <button
       type="button"
       onclick={onback}
-      class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+      class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 shadow-sm transition hover:bg-gray-50 active:scale-95 active:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
     >
       ← Kembali ke list
     </button>
@@ -65,7 +65,7 @@
     </div>
   </header>
 
-  <div class="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+  <div class="rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
     {#if loading}
       <p class="text-sm text-gray-500">Memuat data...</p>
     {:else if error}
@@ -126,8 +126,22 @@
         </div>
       </dl>
 
-      <!-- sub-tabel item -->
-      <div class="mt-6 overflow-x-auto">
+      <!-- sub-tabel item: mobile = kartu, sm+ = tabel -->
+      <ul class="mt-6 space-y-3 sm:hidden">
+        {#each items as it, i (i)}
+          <li class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="truncate text-sm font-semibold text-slate-800">{it.item ?? ''}</p>
+                <p class="mt-1 text-sm text-gray-500">{it.description ?? ''}</p>
+              </div>
+              <span class="shrink-0 rounded-lg border border-blue-100 bg-blue-50 px-2.5 py-1 text-sm font-semibold text-blue-700">{it.qty}</span>
+            </div>
+          </li>
+        {/each}
+      </ul>
+
+      <div class="mt-6 hidden overflow-x-auto overscroll-x-contain sm:block">
         <table class="w-full min-w-max border-separate border-spacing-0 text-left">
           <thead>
             <tr>
@@ -138,7 +152,7 @@
           </thead>
           <tbody>
             {#each items as it, i (i)}
-              <tr class="transition-colors odd:bg-white even:bg-gray-50">
+              <tr class="transition-colors odd:bg-white even:bg-gray-50 hover:bg-blue-50/60">
                 <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{it.item ?? ''}</td>
                 <td class="border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{it.description ?? ''}</td>
                 <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{it.qty}</td>

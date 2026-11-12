@@ -15,6 +15,26 @@
     localStorage.setItem(KEY, expanded ? '1' : '0')
   })
 
+  // mobile: drawer tertutup (off-canvas) + backdrop; desktop: expand/collapse seperti biasa
+  const mobileMQ = window.matchMedia('(max-width: 767px)')
+  let mobileOpen = $state(false)
+  // label/brand tampil saat expanded (desktop) atau drawer terbuka (mobile)
+  let wide = $derived(expanded || mobileOpen)
+
+  function toggle() {
+    if (mobileMQ.matches) mobileOpen = !mobileOpen
+    else expanded = !expanded
+  }
+
+  function goTo(id) {
+    page = id
+    mobileOpen = false
+  }
+
+  function onKeydown(e) {
+    if (e.key === 'Escape') mobileOpen = false
+  }
+
   const items = [
     {
       id: 'dashboard',
@@ -48,18 +68,49 @@
   }
 </script>
 
+<svelte:window onkeydown={onKeydown} />
+
+<!-- trigger hamburger mobile: tampil hanya saat drawer tertutup -->
+{#if !mobileOpen}
+  <button
+    type="button"
+    aria-label="Buka menu"
+    aria-controls="app-sidebar"
+    aria-expanded="false"
+    onclick={() => (mobileOpen = true)}
+    class="fixed left-3 top-3 z-40 flex size-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 shadow-md transition active:scale-95 active:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-700/30 md:hidden"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" class="size-5" aria-hidden="true">
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  </button>
+{/if}
+
+<!-- backdrop: klik untuk tutup drawer (mobile saja) -->
+{#if mobileOpen}
+  <button
+    type="button"
+    aria-label="Tutup menu"
+    onclick={() => (mobileOpen = false)}
+    class="fixed inset-0 z-20 bg-slate-900/40 backdrop-blur-[2px] transition-opacity md:hidden"
+  ></button>
+{/if}
+
 <aside
-  class="fixed inset-y-0 left-0 z-30 flex flex-col border-r border-gray-200 bg-white transition-[width] duration-200 ease-out {expanded
-    ? 'w-60'
-    : 'w-[72px]'}"
+  id="app-sidebar"
+  class="fixed inset-y-0 left-0 z-30 flex w-60 flex-col border-r border-gray-200 bg-white shadow-2xl shadow-slate-900/10 transition-[width,transform] duration-200 ease-out motion-reduce:transition-none md:shadow-none {expanded
+    ? ''
+    : 'md:w-[72px]'} {mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}"
 >
   <!-- top: hamburger + brand -->
-  <div class="flex items-center gap-2 px-3 py-4 {expanded ? '' : 'flex-col gap-3 px-2'}">
+  <div class="flex items-center gap-2 px-3 py-4 {wide ? '' : 'flex-col gap-3 px-2'}">
     <button
       type="button"
-      aria-label={expanded ? 'Tutup menu' : 'Buka menu'}
-      onclick={() => (expanded = !expanded)}
-      class="relative size-8 shrink-0 rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-700/30 {expanded
+      aria-label={wide ? 'Tutup menu' : 'Buka menu'}
+      aria-expanded={wide}
+      aria-controls="app-sidebar"
+      onclick={toggle}
+      class="relative size-8 shrink-0 rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-700/30 {wide
         ? 'open'
         : ''}"
     >
@@ -67,25 +118,25 @@
       <span class="bar bar-2"></span>
       <span class="bar bar-3"></span>
     </button>
-    {#if expanded}
-      <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-blue-700 text-xs font-bold text-white">P</span>
+    {#if wide}
+      <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-blue-600 to-blue-800 text-xs font-bold text-white">P</span>
       <span class="truncate text-sm font-semibold text-slate-700">Monitoring Pack01</span>
     {:else}
-      <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-blue-700 text-xs font-bold text-white">P</span>
+      <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-blue-600 to-blue-800 text-xs font-bold text-white">P</span>
     {/if}
   </div>
 
   <!-- nav -->
-  <nav class="mt-2 flex-1 space-y-1 overflow-y-auto px-3 {expanded ? '' : 'px-2'}">
+  <nav class="mt-2 flex-1 space-y-1 overflow-y-auto px-3 {wide ? '' : 'px-2'}">
     {#each items as item (item.id)}
       <button
         type="button"
-        title={expanded ? undefined : item.label}
-        onclick={() => (page = item.id)}
-        class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-700/30 {expanded
+        title={wide ? undefined : item.label}
+        onclick={() => goTo(item.id)}
+        class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors active:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-700/30 {wide
           ? ''
           : 'justify-center'} {page === item.id || (item.id === 'task' && page === 'task-detail')
-          ? 'bg-blue-700 text-white shadow-sm'
+          ? 'bg-blue-700 text-white shadow-sm shadow-blue-700/30'
           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}"
       >
         <svg
@@ -99,7 +150,7 @@
           aria-hidden="true"
         >{@html item.icon}</svg>
         <span
-          class="overflow-hidden whitespace-nowrap text-left transition-all duration-200 {expanded
+          class="overflow-hidden whitespace-nowrap text-left transition-all duration-200 {wide
             ? 'ml-3 max-w-[140px] flex-1 opacity-100'
             : 'ml-0 max-w-0 opacity-0'}"
         >
@@ -110,13 +161,13 @@
   </nav>
 
   <!-- footer: email + logout -->
-  <div class="space-y-2 border-t border-gray-200 px-3 py-4 {expanded ? '' : 'px-2'}">
+  <div class="space-y-2 border-t border-gray-200 px-3 py-4 {wide ? '' : 'px-2'}">
     <p class="truncate text-xs text-gray-400" title={email}>{email}</p>
     <button
       type="button"
       onclick={logout}
-      title={expanded ? undefined : 'Logout'}
-      class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500/30 {expanded
+      title={wide ? undefined : 'Logout'}
+      class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 active:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500/30 {wide
         ? ''
         : 'justify-center'}"
     >
@@ -134,7 +185,7 @@
         <path d="M16 17l5-5-5-5" />
         <path d="M21 12H9" />
       </svg>
-      {#if expanded}<span>Logout</span>{/if}
+      {#if wide}<span>Logout</span>{/if}
     </button>
   </div>
 </aside>
