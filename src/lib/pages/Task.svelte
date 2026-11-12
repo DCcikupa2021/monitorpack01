@@ -39,7 +39,9 @@
       r.type_tr,
       r.lottable_2,
       r.to_site_id,
-      r.user_name
+      r.user_name,
+      (r.items ?? []).join(' '),
+      (r.descs ?? []).join(' ')
     ]
       .map((v) => v ?? '')
       .join(' ')
@@ -51,7 +53,7 @@
       supabase
         .from('packing_reports')
         .select(
-          'shipment_id, to_site_name, total_qty, status1, wave_number, comment, type_tr, lottable_2, to_site_id'
+          'shipment_id, to_site_name, total_qty, status1, wave_number, comment, type_tr, lottable_2, to_site_id, item, description'
         )
         .order('created_at', { ascending: false }),
       supabase.from('task_lookup').select('reference_id, user_name, date_pick')
@@ -81,9 +83,15 @@
             comment: r.comment,
             type_tr: r.type_tr,
             lottable_2: r.lottable_2,
-            to_site_id: r.to_site_id
+            to_site_id: r.to_site_id,
+            items: [],
+            descs: []
           })
         }
+        // kumpulin item no + item name (dedupe) buat search
+        const g2 = byTr.get(key)
+        if (r.item && !g2.items.includes(r.item)) g2.items.push(r.item)
+        if (r.description && !g2.descs.includes(r.description)) g2.descs.push(r.description)
       }
       for (const [key, g] of byTr) {
         const l = lookByTr.get(key)
