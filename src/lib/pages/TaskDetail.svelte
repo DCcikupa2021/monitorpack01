@@ -2,15 +2,21 @@
   import { supabase } from '../supabase.js'
   import Swal from 'sweetalert2'
   import { fmtAging } from '../aging.js'
+  import { saveReason, fetchReasons } from '../reasons.js'
 
   let { id = '', onback = () => {} } = $props()
 
   let rows = $state([])
   let lookup = $state(null)
   let locRows = $state([])
+  let siteRows = $state([])
+  let reasons = $state([])
   let loading = $state(true)
   let error = $state('')
   let now = $state(Date.now())
+  let modalItem = $state(null)
+  let reasonText = $state('')
+  let saving = $state(false)
 
   $effect(() => {
     const t = setInterval(() => {
@@ -51,10 +57,12 @@
         rows = []
         lookup = null
         locRows = []
+        siteRows = []
+        reasons = []
         loading = false
         return
       }
-      const [pack, look, locs] = await Promise.all([
+      const [pack, look, locs, sites, reas] = await Promise.all([
         supabase
           .from('packing_reports')
           .select(
@@ -63,13 +71,21 @@
           .eq('shipment_id', id)
           .order('created_at', { ascending: false }),
         supabase.from('task_lookup').select('date_pick, user_name').eq('reference_id', id).maybeSingle(),
-        supabase.from('task_locations').select('item, locations').eq('reference_id', id)
+        supabase
+          .from('scale_transactions')
+          .select('reference_id, item, transaction_type, location')
+          .eq('reference_id', id)
+          .in('transaction_type', ['Pick confirmation', 'Pick & Put confirmation']),
+        supabase.from('mtrx-store').select('"Code Site", "DK/LK", "Type Kirim"'),
+        fetchReasons()
       ])
       if (cancelled) return
       if (pack.error) error = pack.error.message
       else rows = pack.data ?? []
       lookup = look.data ?? null
       locRows = locs.data ?? []
+      siteRows = sites.data ?? []
+      reasons = reas.data ?? []
       loading = false
     })()
     return () => {
@@ -78,6 +94,9 @@
   })
 
   let head = $derived(rows[0] ?? null)
+
+  // vlookup mtrx-store via packing_reports.to_site_id → Code Site
+  let site = $derived(siteRows.find((s) => String(s['Code Site']) === (head?.to_site_id ?? '')) ?? null)
 
   // sub-tabel: baris baru selama item berbeda; kode sama → qty dijumlah
   let items = $derived.by(() => {
@@ -89,11 +108,90 @@
       if (hit) hit.qty += q
       else byItem.set(key, { item: r.item, description: r.description, qty: q, locations: [] })
     }
-    const locByItem = new Map()
-    for (const l of locRows) locByItem.set(l.item ?? '', l.locations ?? [])
-    for (const it of byItem.values()) it.locations = locByItem.get(it.item ?? '') ?? []
+    // Pick confirmation menang penuh; semua location Pick kosong/blank → pakai Pick & Put confirmation (tanpa campur)
+    const pickByItem = new Map()
+    const altByItem = new Map()
+    for (const l of locRows) {
+      const loc = String(l.location ?? '').trim()
+      if (!loc || loc.startsWith('-') || loc === 'PACK01') continue
+      const m = l.transaction_type === 'Pick confirmation' ? pickByItem : altByItem
+      const key = l.item ?? ''
+      const arr = m.get(key) ?? []
+      if (!arr.includes(loc)) arr.push(loc)
+      m.set(key, arr)
+    }
+    const nonBlank = (arr) => (arr ?? []).filter((x) => String(x ?? '').trim() !== '')
+    for (const it of byItem.values()) {
+      const pick = nonBlank(pickByItem.get(it.item ?? ''))
+      it.locations = pick.length ? pick : nonBlank(altByItem.get(it.item ?? ''))
+    }
     return [...byItem.values()]
   })
+
+  // key: no_item + location (baris item pakai location pertama)
+  const keyOf = (noItem, loc) => `${noItem ?? ''}|${loc ?? ''}`
+
+  let reasonMap = $derived.by(() => {
+    const m = new Map()
+    for (const r of reasons) m.set(keyOf(r.no_item, r.location), r)
+    return m
+  })
+
+  function openReason(it) {
+    modalItem = it
+    reasonText = reasonMap.get(keyOf(it.item, (it.locations ?? [])[0]))?.reason ?? ''
+  }
+
+  function closeReason() {
+    modalItem = null
+    reasonText = ''
+  }
+
+  async function saveReasonModal() {
+    const it = modalItem
+    if (!it) return
+    const location = (it.locations ?? [])[0] ?? ''
+    const text = reasonText
+    saving = true
+    const { error: saveErr } = await saveReason({
+      shipmentId: head?.shipment_id ?? id,
+      store: head?.to_site_name ?? '',
+      trFull: head?.shipment_id ?? id,
+      typeTr: head?.type_tr ?? '',
+      noItem: it.item ?? '',
+      itemName: it.description ?? '',
+      qty: it.qty,
+      dkLk: site?.['DK/LK'] ?? '',
+      location,
+      user: lookup?.user_name ?? '',
+      comment: head?.comment ?? '',
+      reasonText: text
+    })
+    saving = false
+    if (saveErr) {
+      Swal.fire({ icon: 'error', title: 'Gagal simpan reason', text: saveErr.message })
+      return
+    }
+    const entry = {
+      shipment_id: head?.shipment_id ?? id,
+      store: head?.to_site_name ?? '',
+      tr_full: head?.shipment_id ?? id,
+      type_tr: head?.type_tr ?? '',
+      no_item: it.item ?? '',
+      item_name: it.description ?? '',
+      qty: it.qty,
+      dk_lk: site?.['DK/LK'] ?? '',
+      location,
+      user_name: lookup?.user_name ?? '',
+      comment: head?.comment ?? '',
+      reason: text,
+      created_at: new Date().toISOString()
+    }
+    const rest = reasons.filter((r) => keyOf(r.no_item, r.location) !== keyOf(entry.no_item, entry.location))
+    reasons = [entry, ...rest]
+    closeReason()
+    Swal.fire({ icon: 'success', title: 'Reason tersimpan', timer: 1500, showConfirmButton: false })
+  }
 </script>
 
 <div class="space-y-6">
@@ -133,6 +231,14 @@
         <div>
           <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Site Code</dt>
           <dd class="mt-0.5 text-sm text-gray-700">{head.to_site_id ?? ''}</dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Type Kirim</dt>
+          <dd class="mt-0.5 text-sm text-gray-700">{site?.['Type Kirim'] ?? ''}</dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">DK/LK</dt>
+          <dd class="mt-0.5 text-sm text-gray-700">{site?.['DK/LK'] ?? ''}</dd>
         </div>
         <div>
           <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">TR</dt>
@@ -208,6 +314,7 @@
               <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Item Name</th>
               <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Location</th>
               <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Qty</th>
+              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Reason</th>
             </tr>
           </thead>
           <tbody>
@@ -222,6 +329,26 @@
                   <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm"><button type="button" class="text-blue-600 hover:underline" onclick={viewNA}>view</button></td>
                 {/if}
                 <td rowspan={locs.length || 1} class="whitespace-nowrap border-b border-gray-100 px-3 py-2 align-top text-sm text-gray-700">{it.qty}</td>
+                <td rowspan={locs.length || 1} class="whitespace-nowrap border-b border-gray-100 px-3 py-2 align-top text-sm">
+                  {#if reasonMap.has(keyOf(it.item, locs[0]))}
+                    <button
+                      type="button"
+                      class="inline-flex items-center gap-1 rounded-lg border border-blue-600 bg-blue-600 px-2.5 py-1 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                      onclick={() => openReason(it)}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="size-3" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                      Reason
+                    </button>
+                  {:else}
+                    <button
+                      type="button"
+                      class="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-600 shadow-sm transition hover:bg-gray-50 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                      onclick={() => openReason(it)}
+                    >
+                      Reason
+                    </button>
+                  {/if}
+                </td>
               </tr>
               {#each locs.slice(1) as loc, j}
                 <tr class="transition-colors {i % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50/60">
@@ -234,4 +361,51 @@
       </div>
     {/if}
   </div>
+
+  {#if modalItem}
+    <div
+      role="presentation"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onclick={(e) => {
+        if (e.target === e.currentTarget) closeReason()
+      }}
+    >
+      <div
+        role="dialog"
+        tabindex="-1"
+        aria-modal="true"
+        aria-label="Reason"
+        class="w-full max-w-lg rounded-xl border border-gray-100 bg-white p-5 shadow-xl"
+      >
+        <h2 class="text-lg font-semibold text-slate-800">Reason</h2>
+        <p class="mt-1 text-sm text-gray-500">
+          <span class="font-medium text-gray-700">{modalItem.description ?? ''}</span>
+          · No Item {modalItem.item ?? ''}
+        </p>
+        <textarea
+          rows="6"
+          class="mt-3 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+          placeholder="Tulis reason..."
+          bind:value={reasonText}
+        ></textarea>
+        <div class="mt-4 flex justify-end gap-2">
+          <button
+            type="button"
+            class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 shadow-sm transition hover:bg-gray-50 active:scale-95 active:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+            onclick={closeReason}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            disabled={saving}
+            class="rounded-lg border border-blue-600 bg-blue-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 active:scale-95 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+            onclick={saveReasonModal}
+          >
+            {saving ? 'Menyimpan...' : 'Save'}
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
 </div>

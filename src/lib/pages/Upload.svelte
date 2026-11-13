@@ -335,7 +335,7 @@
 
       <div class="mt-5 border-t border-gray-100 pt-4">
         <p class="text-xs text-gray-500">
-          Proses akan menimpa seluruh data lama di Supabase dengan data dari file yang diproses.
+          File packing menimpa seluruh data lama; file scale di-upsert per internal_id — aman diupload ulang.
         </p>
         <div class="mt-3 flex justify-end">
           <button

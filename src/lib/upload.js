@@ -2,6 +2,10 @@ import { supabase } from './supabase.js'
 
 const TABLES = { packing: 'packing_reports', scale: 'scale_transactions' }
 
+// packing = snapshot penuh (hapus lama, tulis baru); scale = upsert per internal_id, tanpa delete
+const REPLACE_TABLES = new Set(['packing_reports'])
+const UPSERT_KEYS = { scale_transactions: 'internal_id' }
+
 // wajib sama persis dengan DDL kolom di migrasi
 const NUMBERS = {
   packing_reports: ['wave_number', 'line_number', 'internal_shipment_line_number', 'internal_shipment_number', 'total_qty', 'weight'],
@@ -12,8 +16,8 @@ const DATES = {
   scale_transactions: ['activity_date_time'],
 }
 
-// CHUNK 5000 + kirim paralel: file scale ~114k baris harus jauh di bawah 1 menit
-const CHUNK = 5000
+// CHUNK 1000 + kirim paralel: jauh di bawah statement_timeout 8s koneksi PostgREST lama
+const CHUNK = 1000
 const PARALLEL = 6
 
 const toColumn = (h) => h.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '')
@@ -54,8 +58,10 @@ export async function processUpload(files) {
     const { headers, rows } = groups[kind]
     const table = TABLES[kind]
 
-    const { error: delError } = await supabase.from(table).delete().not('id', 'is', null)
-    if (delError) throw new Error('Gagal menghapus data lama di ' + table + ': ' + delError.message)
+    if (REPLACE_TABLES.has(table)) {
+      const { error: delError } = await supabase.from(table).delete().not('id', 'is', null)
+      if (delError) throw new Error('Gagal menghapus data lama di ' + table + ': ' + delError.message)
+    }
 
     const cols = headers.map(toColumn)
     const numbers = new Set(NUMBERS[table])
@@ -74,7 +80,7 @@ export async function processUpload(files) {
       return out
     })
 
-    // pool worker: beberapa chunk jalan bareng, urutan tidak penting setelah delete
+    // pool worker: beberapa chunk jalan bareng, urutan tidak penting
     const offsets = []
     for (let o = 0; o < mapped.length; o += CHUNK) offsets.push(o)
     let cursor = 0
@@ -82,7 +88,10 @@ export async function processUpload(files) {
       while (cursor < offsets.length) {
         const offset = offsets[cursor++]
         const chunk = mapped.slice(offset, offset + CHUNK)
-        const { error } = await supabase.from(table).insert(chunk)
+        const key = UPSERT_KEYS[table]
+        const { error } = key
+          ? await supabase.from(table).upsert(chunk, { onConflict: key })
+          : await supabase.from(table).insert(chunk)
         if (error) throw new Error('Upload ' + table + ' gagal di baris ' + (offset + 1) + ': ' + error.message)
       }
     }
