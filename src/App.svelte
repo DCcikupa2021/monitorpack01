@@ -9,7 +9,7 @@
   import TaskDetail from './lib/pages/TaskDetail.svelte'
   import Reason from './lib/pages/Reason.svelte'
   import Pengaturan from './lib/pages/Pengaturan.svelte'
-  import { logAuthEvent, showSessionBadge } from './lib/authDebug.js'
+  import { logAuthEvent } from './lib/authDebug.js'
 
   let session = $state(null)
   let email = $state('')
@@ -41,12 +41,10 @@
 
   supabase.auth.getSession().then(({ data }) => {
     session = data.session
-    showSessionBadge(data.session)
     email = data.session?.user?.email ?? ''
   })
   supabase.auth.onAuthStateChange((ev, data) => {
     logAuthEvent(ev, data)
-    showSessionBadge(data)
     // bentuk callback: (event, session) — bukan {session}
     // event selain SIGNED_OUT dengan data null tidak boleh menimpa state login
     if (ev === 'SIGNED_OUT') {
