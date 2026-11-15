@@ -41,6 +41,13 @@ Update terakhir: 2026-11-15
 - [x] Fix login user baru "Database error querying schema" (2026-11-15, 8294a36 + 97f3122): akar 1 = `create_app_user` insert `auth.users` tanpa `auth.identities` (GoTrue join tabel itu) → function + backfill; akar 2 = kolom token `auth.users` NULL, GoTrue scan ke string gagal (`converting NULL to string is unsupported`) → semua token wajib `''`. SQL dijalankan via MCP ke project `owkvioooumcipiyldnmx`; `docs/supabase-app-users.sql` disinkronkan.
 - [x] Pendaftaran user admin-only (2026-11-15, 9a3bd78): 3 lapis — UI gate di Pengaturan (non-admin lihat kartu "Akses terbatas", `fetchAppUsers` tidak dipanggil), RLS select `app_users` hanya `auth.jwt() ->> 'email'` = `administrator@mitra10.com`, `create_app_user` raise exception untuk non-admin. Preferensi tampilan tetap terbuka untuk semua user.
 - [x] Hapus badge debug auth (2026-11-15, c9f0dba): `showSessionBadge` tidak dipanggil lagi; badge DEV-only itu memang tidak pernah ikut build produksi.
+- [x] MCP Supabase pindah project (2026-11-15): `opencode.json` `project_ref` → `owkvioooumcipiyldnmx` (sebelumnya `lbrnxvlyrecerbnkliep`); verifikasi `get_project_url` cocok.
+- [x] Dashboard analitik dari dummy3 (2026-11-15, b276f8f, @designer): placeholder diganti total mengikuti `dummy/dummy3.html` — sticky header + greeting + pill jumlah TR, 4 KPI (Total TR, Total Qty, Selesai, Aging Terlama), panel grid 2×2: chart TR/hari 7 hari (`date_pick` fallback `created_at`), donut DK/LK + Type Kirim (distinct dari `mtrx-store`), Aging Terlama top 5 (klik → `#/task/detail`), Aktivitas Terbaru 5 baris (`scale_transactions` Pick/Put confirmation terakhir). Data load 1 rantai sama Task: `packing_reports` → `task_lookup` → `mtrx-store`. Loading/empty/error per panel, dark mode, mobile 360px. Catatan: KPI Selesai = 0 (data semua `Packing Pending`), chart tipis (data baru dibuat hari itu) — diterima user.
+- [x] Task: filter Aging (2026-11-15, b276f8f, @fixer): section ke-4 di popup filter — `0 Hari` (<1), `1 Hari` (1–<2), `2 Hari` (2–<3), `3 Hari` (3–<7), `7 Hari` (≥7), bucket `floor(now − date_pick)`; multi-select OR dalam section, AND antar section; tanpa `date_pick` ikut hanya saat filter Aging nonaktif; masuk `activeFilterCount`, `resetFilters`, export (lewat `matched`).
+- [x] Task: opsi Aging adaptif (2026-11-15): `agingOpts` dihitung dari row yang lolos filter lain (search/Type TR/DK/LK/Type Kirim) — bucket kosong disembunyikan (mis. Type TR Terjual tanpa data ≥1 hari → hanya "0 Hari"); pilihan `selAging` otomatis dibuang saat bucket kehilangan data.
+- [x] TaskDetail: kolom Category (2026-11-15, b276f8f): `LEFT(item, 2)` → kamus 12 kode (01 FLOORING AND WALL … 13 KITCHEN, tanpa 12); tampil `01 FLOORING AND WALL` di kolom tabel + baris mobile; kode tak dikenal → `—`.
+- [x] TaskDetail: tombol Reason di kartu mobile (2026-11-15): kartu <640px sebelumnya hanya Location (Reason cuma muncul di landscape/tabel `sm:`) → tiap kartu kini punya baris Reason di bawah, style sama dengan tabel (tersimpan = biru + centang).
+- [x] Reason: export Excel (2026-11-15, b276f8f): ikon unduh di header → XLSX via `xlsx`, kolom = tabel (STORE/TR/TYPE TR/NO ITEM/ITEM NAME/QTY/DK/LK/LOCATION/USER/COMMENT, `reason` menang atas `comment`), sheet `Reason`, file `reason-export-YYYY-MM-DD.xlsx`, data kosong → Swal info.
 
 ## Keputusan
 
@@ -64,10 +71,10 @@ npm run build   # produksi → dist/
 
 ## Next
 
-1. Dashboard isi (kartu ringkasan).
-2. Uji end-to-end di browser: upload (Proses → cek baris di Supabase), reason delete, export Task, login 2 akun (admin + user biasa), ganti mode gelap.
-3. Deploy Cloudflare Pages (env `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`).
-4. Review copy login (heading "Masuk ke akun Anda" ditambahkan designer, bisa diubah).
+1. Uji end-to-end di browser: upload (Proses → cek baris di Supabase), reason delete + export Reason, export Task, filter Aging, dashboard live, login 2 akun (admin + user biasa), ganti mode gelap, tampilan HP (Reason mobile, dashboard 360px).
+2. Deploy Cloudflare Pages (env `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`).
+3. Review copy login (heading "Masuk ke akun Anda" ditambahkan designer, bisa diubah).
+4. KPI Dashboard "Selesai" = 0 selama `status1` semua `Packing Pending` — perlu definisi status lanjutan bila dihitung.
 
 ## Risiko / catatan
 
