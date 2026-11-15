@@ -1,6 +1,6 @@
 # Progress — Monitoring Pack01
 
-Update terakhir: 2026-11-12
+Update terakhir: 2026-11-15
 
 ## Selesai
 
@@ -34,6 +34,13 @@ Update terakhir: 2026-11-12
 - [x] Task: header Store/TR/Qty/Aging + group per TR (2026-11-12, PRD §6.4): Store=`to_site_name` (baris pertama per TR), TR=`shipment_id` via `fmtTR`, Qty=`SUM(total_qty)` per TR (SUMIF), Aging kosong. Fetch `shipment_id, to_site_name, total_qty`, group di client via Map. `npm run build` + smoke test group lolos. Item No/Item Name dihapus.
 - [x] Detail Task via route hash (2026-11-12, PRD §6.4): klik baris list → `#/task/detail?id=<shipment_id>` (bukan menu sidebar; hash aman di Cloudflare Pages tanpa rewrite). `TaskDetail.svelte`: fetch per TR — field horizontal (Aging/Location/User/Reason kosong, TR raw tanpa fmtTR, Store, Site Code=`to_site_id`, Lotable=`lottable_2`, Type TR, Comment, No Wave=`wave_number`, Status1) + sub-tabel item (No Item/Item Name/Qty, kode item sama digabung, qty dijumlah). Back = clear hash. Sidebar highlight Task tetap saat di detail. `npm run build` lolos. Belum uji browser.
 - [x] UI polish mobile-first (2026-11-12, @designer): sidebar jadi drawer off-canvas di HP (<768px) + backdrop blur + Escape/close-on-nav, hamburger trigger fixed `md:hidden`, desktop tetap expand/collapse + localStorage sama. Task list: card di mobile / table `sm:` + press feedback; detail item sub-tabel sama. Page fade/slide `{#key page}` (respect `prefers-reduced-motion`), padding mobile `pt-14`. Light polish Dashboard (gradient + hover lift), Upload dropzone, empty state Reason/Pengaturan. Nol perubahan logic (fmtTR, hash route, group-by-TR, query, auth, copy). `npm run build` lolos. Belum uji browser.
+- [x] Task: lookup `scale_transactions` + aging live (2026-11-13, 2864249): date pick/user/location per TR, Aging dihitung live dari `date_pick` (`fmtAging` di `src/lib/aging.js`), list search + sort aging. `npm run build` lolos.
+- [x] Task search termasuk item no + item name (2026-11-13, 7f0613e).
+- [x] Task: filter popup + export CSV/XLSX (2026-11-13, f6f47a5): filter Type TR / DK-LK / type kirim (opsi turunan dari data), search sinkron dengan export (`buildTaskExport` di `src/lib/exportTasks.js` — export ikut filter+search aktif). Reason delete mode: ikon trash di header → toggle tampil tombol hapus per baris samping Comment → konfirmasi Swal → `deleteReason` (`src/lib/reasons.js`) → refetch. `docs/supabase-reasons-table.sql` (tabel `reasons`, upsert per shipment+item+location).
+- [x] Global topbar + dark mode + halaman Pengaturan (2026-11-15, 55ff46d, @designer + @fixer): topbar sticky `src/lib/components/Topbar.svelte` — brand "Mitra10 DC Cikupa", ikon notif/chat/bantuan (dekoratif), avatar + email login + dropdown ganti Light/Dark; sidebar mulai di bawah topbar (`top-14`), hamburger mobile pindah ke topbar. Dark mode: `@custom-variant dark` di `app.css`, class `.dark` di `<html>`, semua halaman diberi varian `dark:` (kontras terang+gelap). Pengaturan: form tambah user + tabel daftar user (`src/lib/appUsers.js`) + preferensi mode/ukuran font/notifikasi (`src/lib/prefs.js`, localStorage `pack01_*`, font 14/16/18px). `npm run build` lolos.
+- [x] Fix login user baru "Database error querying schema" (2026-11-15, 8294a36 + 97f3122): akar 1 = `create_app_user` insert `auth.users` tanpa `auth.identities` (GoTrue join tabel itu) → function + backfill; akar 2 = kolom token `auth.users` NULL, GoTrue scan ke string gagal (`converting NULL to string is unsupported`) → semua token wajib `''`. SQL dijalankan via MCP ke project `owkvioooumcipiyldnmx`; `docs/supabase-app-users.sql` disinkronkan.
+- [x] Pendaftaran user admin-only (2026-11-15, 9a3bd78): 3 lapis — UI gate di Pengaturan (non-admin lihat kartu "Akses terbatas", `fetchAppUsers` tidak dipanggil), RLS select `app_users` hanya `auth.jwt() ->> 'email'` = `administrator@mitra10.com`, `create_app_user` raise exception untuk non-admin. Preferensi tampilan tetap terbuka untuk semua user.
+- [x] Hapus badge debug auth (2026-11-15, c9f0dba): `showSessionBadge` tidak dipanggil lagi; badge DEV-only itu memang tidak pernah ikut build produksi.
 
 ## Keputusan
 
@@ -58,14 +65,14 @@ npm run build   # produksi → dist/
 ## Next
 
 1. Dashboard isi (kartu ringkasan).
-2. Menu Task: isi Aging/Location/User/Reason + Reason flow. (List group-per-TR + detail route hash sudah ada — 2026-11-12.)
-3. Pengaturan: kelola user, mode gelap/terang.
-4. Uji upload end-to-end di browser (Proses → cek baris masuk di Supabase).
-5. Review copy login (heading "Masuk ke akun Anda" ditambahkan designer, bisa diubah).
+2. Uji end-to-end di browser: upload (Proses → cek baris di Supabase), reason delete, export Task, login 2 akun (admin + user biasa), ganti mode gelap.
+3. Deploy Cloudflare Pages (env `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`).
+4. Review copy login (heading "Masuk ke akun Anda" ditambahkan designer, bisa diubah).
 
 ## Risiko / catatan
 
 - `PRD.md` berisi password login — pastikan tetap di `.gitignore` sebelum push.
+- `app_users` simpan password **plaintext** (keputusan produk, diminta user) + RLS hanya admin yang baca — siapapun dengan session admin membaca semua password.
 - Belum ada uji browser manual untuk upload + fix session (verifikasi build + smoke test Node saja).
 - Upload file scale (~187k baris) = ±188 request chunk, bisa ~1–2 menit. Gagal di tengah = data lama sudah terhapus, sebagian data baru masuk (tanpa rollback) — sesuai desain replace.
 - Deploy Cloudflare Pages butuh env var di sana, bukan file `.env`.
@@ -73,6 +80,6 @@ npm run build   # produksi → dist/
 
 ## Debugging tooling (2026-11-11)
 
-- [x] Logger auth DEV-only (`src/lib/authDebug.js`) + badge status sesi — nol perubahan produksi
+- [x] Logger auth DEV-only (`src/lib/authDebug.js`) — nol perubahan produksi. Badge status sesi sudah dilepas (2026-11-15, c9f0dba); `logAuthEvent` (console.debug) masih ada.
 - [x] `docs/BUG.md` — template laporan + standar investigasi + contoh kasus session
 - [x] `package-lock.json` dikunci (source node_modules = versi lockfile)
