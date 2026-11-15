@@ -199,82 +199,82 @@
     <button
       type="button"
       onclick={onback}
-      class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 shadow-sm transition hover:bg-gray-50 active:scale-95 active:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+      class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 shadow-sm transition hover:bg-gray-50 active:scale-95 active:bg-gray-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:active:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-700/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:active:bg-slate-700"
     >
       ← Kembali ke list
     </button>
     <div>
-      <h1 class="text-2xl font-semibold tracking-tight text-slate-800">Detail Task</h1>
-      <p class="mt-1 text-sm text-gray-500">{id || '—'}</p>
+      <h1 class="text-2xl font-semibold tracking-tight text-slate-800 dark:text-slate-100">Detail Task</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">{id || '—'}</p>
     </div>
   </header>
 
-  <div class="rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
+  <div class="rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6 dark:border-slate-700/70 dark:bg-slate-900">
     {#if loading}
-      <p class="text-sm text-gray-500">Memuat data...</p>
+      <p class="text-sm text-gray-500 dark:text-slate-400">Memuat data...</p>
     {:else if error}
-      <p class="text-sm text-red-600">{error}</p>
+      <p class="text-sm text-red-600 dark:text-red-400">{error}</p>
     {:else if !head}
-      <p class="font-medium text-slate-800">Data tidak ditemukan</p>
-      <p class="mt-1 text-sm text-gray-500">TR ini tidak ada di packing_reports.</p>
+      <p class="font-medium text-slate-800 dark:text-slate-100">Data tidak ditemukan</p>
+      <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">TR ini tidak ada di packing_reports.</p>
     {:else}
       <!-- field horizontal (kecuali item → sub-tabel) -->
       <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Aging</dt>
-          <dd class="mt-0.5 text-sm text-gray-700">{fmtAging(lookup?.date_pick, now)}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Aging</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200">{fmtAging(lookup?.date_pick, now)}</dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Store</dt>
-          <dd class="mt-0.5 text-sm text-gray-700">{head.to_site_name ?? ''}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Store</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200">{head.to_site_name ?? ''}</dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Site Code</dt>
-          <dd class="mt-0.5 text-sm text-gray-700">{head.to_site_id ?? ''}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Site Code</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200">{head.to_site_id ?? ''}</dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Type Kirim</dt>
-          <dd class="mt-0.5 text-sm text-gray-700">{site?.['Type Kirim'] ?? ''}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Type Kirim</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200">{site?.['Type Kirim'] ?? ''}</dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">DK/LK</dt>
-          <dd class="mt-0.5 text-sm text-gray-700">{site?.['DK/LK'] ?? ''}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">DK/LK</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200">{site?.['DK/LK'] ?? ''}</dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">TR</dt>
-          <dd class="mt-0.5 text-sm text-gray-700">{head.shipment_id ?? ''}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">TR</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200">{head.shipment_id ?? ''}</dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Lotable</dt>
-          <dd class="mt-0.5 text-sm text-gray-700">{head.lottable_2 ?? ''}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Lotable</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200">{head.lottable_2 ?? ''}</dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Type TR</dt>
-          <dd class="mt-0.5 text-sm text-gray-700">{head.type_tr ?? ''}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Type TR</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200">{head.type_tr ?? ''}</dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Comment</dt>
-          <dd class="mt-0.5 text-sm text-gray-700">{head.comment ?? ''}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Comment</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200">{head.comment ?? ''}</dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">No Wave</dt>
-          <dd class="mt-0.5 text-sm text-gray-700">{head.wave_number ?? ''}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">No Wave</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200">{head.wave_number ?? ''}</dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Status1</dt>
-          <dd class="mt-0.5 text-sm text-gray-700">{head.status1 ?? ''}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Status1</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200">{head.status1 ?? ''}</dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">User</dt>
-          <dd class="mt-0.5 text-sm text-gray-700">{lookup?.user_name ?? ''}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">User</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200">{lookup?.user_name ?? ''}</dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Reason</dt>
-          <dd class="mt-0.5 text-sm text-gray-700"></dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Reason</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200"></dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Date Pick</dt>
-          <dd class="mt-0.5 text-sm text-gray-700">{fmtWib(lookup?.date_pick)}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Date Pick</dt>
+          <dd class="mt-0.5 text-sm text-gray-700 dark:text-slate-200">{fmtWib(lookup?.date_pick)}</dd>
         </div>
       </dl>
 
@@ -282,24 +282,24 @@
       <ul class="mt-6 space-y-3 sm:hidden">
         {#each items as it, i (i)}
           {@const locs = it.locations ?? []}
-          <li class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+          <li class="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-slate-700/70 dark:bg-slate-800/50">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
-                <p class="truncate text-sm font-semibold text-slate-800">{it.item ?? ''}</p>
-                <p class="mt-1 text-sm text-gray-500">{it.description ?? ''}</p>
+                <p class="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">{it.item ?? ''}</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">{it.description ?? ''}</p>
               </div>
-              <span class="shrink-0 rounded-lg border border-blue-100 bg-blue-50 px-2.5 py-1 text-sm font-semibold text-blue-700">{it.qty}</span>
+              <span class="shrink-0 rounded-lg border border-blue-100 bg-blue-50 px-2.5 py-1 text-sm font-semibold text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/50 dark:text-blue-300">{it.qty}</span>
             </div>
-            <div class="mt-3 border-t border-gray-100 pt-3">
-              <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Location</p>
+            <div class="mt-3 border-t border-gray-100 pt-3 dark:border-slate-700/70">
+              <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Location</p>
               {#if locs.length}
                 <div class="mt-1.5 flex flex-wrap gap-1.5">
                   {#each locs as loc}
-                    <span class="rounded-lg border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-600">{loc}</span>
+                    <span class="rounded-lg border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">{loc}</span>
                   {/each}
                 </div>
               {:else}
-                <button type="button" class="mt-1.5 text-sm text-blue-600 hover:underline" onclick={viewNA}>view</button>
+                <button type="button" class="mt-1.5 text-sm text-blue-600 dark:text-blue-400 hover:underline" onclick={viewNA}>view</button>
               {/if}
             </div>
           </li>
@@ -310,26 +310,26 @@
         <table class="w-full min-w-max border-separate border-spacing-0 text-left">
           <thead>
             <tr>
-              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">No Item</th>
-              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Item Name</th>
-              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Location</th>
-              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Qty</th>
-              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Reason</th>
+              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">No Item</th>
+              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Item Name</th>
+              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Location</th>
+              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Qty</th>
+              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Reason</th>
             </tr>
           </thead>
           <tbody>
             {#each items as it, i (i)}
               {@const locs = it.locations ?? []}
-              <tr class="transition-colors {i % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50/60">
-                <td rowspan={locs.length || 1} class="whitespace-nowrap border-b border-gray-100 px-3 py-2 align-top text-sm text-gray-700">{it.item ?? ''}</td>
-                <td rowspan={locs.length || 1} class="border-b border-gray-100 px-3 py-2 align-top text-sm text-gray-700">{it.description ?? ''}</td>
+              <tr class="transition-colors {i % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-gray-50 dark:bg-slate-800/50'} hover:bg-blue-50/60 dark:hover:bg-slate-800">
+                <td rowspan={locs.length || 1} class="whitespace-nowrap border-b border-gray-100 px-3 py-2 align-top text-sm text-gray-700 dark:border-slate-700/70 dark:text-slate-200">{it.item ?? ''}</td>
+                <td rowspan={locs.length || 1} class="border-b border-gray-100 px-3 py-2 align-top text-sm text-gray-700 dark:border-slate-700/70 dark:text-slate-200">{it.description ?? ''}</td>
                 {#if locs.length}
-                  <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-700 {locs.length > 1 ? '' : 'border-b border-gray-100'}">{locs[0]}</td>
+                  <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-700 dark:text-slate-200 {locs.length > 1 ? '' : 'border-b border-gray-100 dark:border-slate-700/70'}">{locs[0]}</td>
                 {:else}
-                  <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm"><button type="button" class="text-blue-600 hover:underline" onclick={viewNA}>view</button></td>
+                  <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm dark:border-slate-700/70"><button type="button" class="text-blue-600 dark:text-blue-400 hover:underline" onclick={viewNA}>view</button></td>
                 {/if}
-                <td rowspan={locs.length || 1} class="whitespace-nowrap border-b border-gray-100 px-3 py-2 align-top text-sm text-gray-700">{it.qty}</td>
-                <td rowspan={locs.length || 1} class="whitespace-nowrap border-b border-gray-100 px-3 py-2 align-top text-sm">
+                <td rowspan={locs.length || 1} class="whitespace-nowrap border-b border-gray-100 px-3 py-2 align-top text-sm text-gray-700 dark:border-slate-700/70 dark:text-slate-200">{it.qty}</td>
+                <td rowspan={locs.length || 1} class="whitespace-nowrap border-b border-gray-100 px-3 py-2 align-top text-sm dark:border-slate-700/70">
                   {#if reasonMap.has(keyOf(it.item, locs[0]))}
                     <button
                       type="button"
@@ -342,7 +342,7 @@
                   {:else}
                     <button
                       type="button"
-                      class="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-600 shadow-sm transition hover:bg-gray-50 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                      class="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-600 shadow-sm transition hover:bg-gray-50 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
                       onclick={() => openReason(it)}
                     >
                       Reason
@@ -351,8 +351,8 @@
                 </td>
               </tr>
               {#each locs.slice(1) as loc, j}
-                <tr class="transition-colors {i % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50/60">
-                  <td class="whitespace-nowrap py-2 pl-10 pr-3 text-sm text-gray-700 {j === locs.length - 2 ? 'border-b border-gray-100' : ''}">{loc}</td>
+                <tr class="transition-colors {i % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-gray-50 dark:bg-slate-800/50'} hover:bg-blue-50/60 dark:hover:bg-slate-800">
+                  <td class="whitespace-nowrap py-2 pl-10 pr-3 text-sm text-gray-700 dark:text-slate-200 {j === locs.length - 2 ? 'border-b border-gray-100 dark:border-slate-700/70' : ''}">{loc}</td>
                 </tr>
               {/each}
             {/each}
@@ -375,23 +375,23 @@
         tabindex="-1"
         aria-modal="true"
         aria-label="Reason"
-        class="w-full max-w-lg rounded-xl border border-gray-100 bg-white p-5 shadow-xl"
+        class="w-full max-w-lg rounded-xl border border-gray-100 bg-white p-5 shadow-xl dark:border-slate-700 dark:bg-slate-800"
       >
-        <h2 class="text-lg font-semibold text-slate-800">Reason</h2>
-        <p class="mt-1 text-sm text-gray-500">
-          <span class="font-medium text-gray-700">{modalItem.description ?? ''}</span>
+        <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Reason</h2>
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">
+          <span class="font-medium text-gray-700 dark:text-slate-200">{modalItem.description ?? ''}</span>
           · No Item {modalItem.item ?? ''}
         </p>
         <textarea
           rows="6"
-          class="mt-3 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+          class="mt-3 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-700/30 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
           placeholder="Tulis reason..."
           bind:value={reasonText}
         ></textarea>
         <div class="mt-4 flex justify-end gap-2">
           <button
             type="button"
-            class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 shadow-sm transition hover:bg-gray-50 active:scale-95 active:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+            class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 shadow-sm transition hover:bg-gray-50 active:scale-95 active:bg-gray-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:active:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
             onclick={closeReason}
           >
             Cancel

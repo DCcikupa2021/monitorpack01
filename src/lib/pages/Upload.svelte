@@ -137,8 +137,8 @@
 
 <div class="space-y-6">
   <header>
-    <h1 class="text-2xl font-semibold tracking-tight text-slate-800">Upload</h1>
-    <p class="mt-1 text-sm text-gray-500">Unggah file Excel untuk diproses.</p>
+    <h1 class="text-2xl font-semibold tracking-tight text-slate-800 dark:text-slate-100">Upload</h1>
+    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Unggah file Excel untuk diproses.</p>
   </header>
 
   <input
@@ -168,12 +168,12 @@
     }}
     ondragleave={onDragLeave}
     ondrop={onDrop}
-    class="cursor-pointer rounded-xl border bg-white p-6 shadow-sm transition hover:border-blue-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-700/30 {dragging
-      ? 'border-blue-600 bg-blue-50/60'
-      : 'border-gray-100'}"
+    class="cursor-pointer rounded-xl border bg-white dark:bg-slate-900 p-6 shadow-sm transition hover:border-blue-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-700/30 {dragging
+      ? 'border-blue-600 bg-blue-50/60 dark:border-blue-500 dark:bg-blue-950/40'
+      : 'border-gray-100 dark:border-slate-700/70'}"
   >
     <div class="flex flex-col items-center justify-center gap-3 py-2 text-center">
-      <span class="flex size-11 items-center justify-center rounded-full bg-blue-50 text-blue-700">
+      <span class="flex size-11 items-center justify-center rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -190,34 +190,34 @@
         </svg>
       </span>
       <div>
-        <p class="text-sm font-medium text-slate-700">
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-200">
           {dragging ? 'Lepaskan file di sini' : 'Tarik file ke sini atau klik untuk memilih file'}
         </p>
-        <p class="mt-1 text-xs text-gray-500">Format: .xlsx atau .xls — boleh lebih dari satu file</p>
+        <p class="mt-1 text-xs text-gray-500 dark:text-slate-400">Format: .xlsx atau .xls — boleh lebih dari satu file</p>
       </div>
     </div>
   </div>
 
   <!-- daftar file -->
   {#if entries.length > 0}
-    <section class="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+    <section class="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-slate-700/70 dark:bg-slate-900">
       <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-        <p class="text-sm font-medium text-slate-700">{entries.length} file</p>
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-200">{entries.length} file</p>
         <button
           type="button"
           onclick={clearAll}
           disabled={processing}
-          class="text-xs font-medium text-gray-500 transition-colors hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-700/30 disabled:cursor-not-allowed disabled:opacity-60"
+          class="text-xs font-medium text-gray-500 transition-colors hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-700/30 disabled:cursor-not-allowed disabled:opacity-60"
         >
           Bersihkan semua
         </button>
       </div>
 
-      <ul class="mt-4 divide-y divide-gray-100">
+      <ul class="mt-4 divide-y divide-gray-100 dark:divide-slate-700/70">
         {#each entries as entry (entry.id)}
           <li class="py-4 first:pt-0 last:pb-0">
             <div class="flex items-center gap-3">
-              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -234,28 +234,28 @@
               </span>
 
               <div class="min-w-0 flex-1">
-                <p class="truncate text-sm font-medium text-slate-800">{entry.file.name}</p>
+                <p class="truncate text-sm font-medium text-slate-800 dark:text-slate-100">{entry.file.name}</p>
 
                 {#if entry.status === 'parsing'}
-                  <p class="mt-0.5 flex items-center gap-1.5 text-xs text-gray-500">
+                  <p class="mt-0.5 flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
                     <span
-                      class="size-3 animate-spin rounded-full border-2 border-current border-t-transparent text-blue-700"
+                      class="size-3 animate-spin rounded-full border-2 border-current border-t-transparent text-blue-700 dark:text-blue-400"
                       aria-hidden="true"
                     ></span>
                     Membaca file…
                   </p>
                 {:else if entry.status === 'error'}
-                  <p class="mt-0.5 text-xs text-gray-500">{formatSize(entry.file.size)}</p>
-                  <p class="mt-1 text-xs text-red-600">{entry.message}</p>
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-slate-400">{formatSize(entry.file.size)}</p>
+                  <p class="mt-1 text-xs text-red-600 dark:text-red-400">{entry.message}</p>
                 {:else}
                   <div class="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
-                    <span class="text-xs text-gray-500">{formatSize(entry.file.size)}</span>
+                    <span class="text-xs text-gray-500 dark:text-slate-400">{formatSize(entry.file.size)}</span>
                     <span
-                      class="inline-flex items-center rounded-md border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700"
+                      class="inline-flex items-center rounded-md border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/50 dark:text-blue-300"
                     >
                       {KIND_LABEL[entry.data.kind] ?? entry.data.kind}
                     </span>
-                    <span class="text-xs text-gray-500">
+                    <span class="text-xs text-gray-500 dark:text-slate-400">
                       {entry.data.rows.length.toLocaleString('id-ID')} baris · {entry.data.headers.length} kolom
                     </span>
                   </div>
@@ -267,7 +267,7 @@
                   type="button"
                   onclick={() => togglePreview(entry)}
                   aria-expanded={entry.expanded}
-                  class="shrink-0 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                  class="shrink-0 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-700/30"
                 >
                   {entry.expanded ? 'Sembunyikan' : 'Pratinjau'}
                 </button>
@@ -279,7 +279,7 @@
                 disabled={processing}
                 aria-label="Hapus file"
                 title="Hapus file"
-                class="flex size-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-700/30 disabled:cursor-not-allowed disabled:opacity-60"
+                class="flex size-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-700/30 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="size-4" aria-hidden="true">
                   <path d="M18 6L6 18M6 6l12 12" />
@@ -289,14 +289,14 @@
 
             {#if entry.status === 'ready' && entry.expanded}
               <div class="mt-3 pl-[52px]">
-                <div class="max-h-56 overflow-auto rounded-lg border border-gray-100">
+                <div class="max-h-56 overflow-auto rounded-lg border border-gray-100 dark:border-slate-700/70">
                   <table class="w-full min-w-max border-separate border-spacing-0 text-left">
                     <thead>
                       <tr>
                         {#each entry.data.headers as h}
                           <th
                             scope="col"
-                            class="sticky top-0 z-10 whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500"
+                            class="sticky top-0 z-10 whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400"
                           >
                             {h}
                           </th>
@@ -305,11 +305,11 @@
                     </thead>
                     <tbody>
                       {#each entry.data.rows.slice(0, PREVIEW_CAP) as row}
-                        <tr class="transition-colors odd:bg-white even:bg-gray-50 hover:bg-blue-50/60">
+                        <tr class="transition-colors odd:bg-white even:bg-gray-50 hover:bg-blue-50/60 dark:odd:bg-slate-900 dark:even:bg-slate-800/50 dark:hover:bg-slate-800">
                           {#each entry.data.headers as h}
-                            <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">
+                            <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700 dark:border-slate-700/70 dark:text-slate-200">
                               {#if isEmpty(row[h])}
-                                <span class="text-gray-300">—</span>
+                                <span class="text-gray-300 dark:text-slate-600">—</span>
                               {:else}
                                 {cellText(row[h])}
                               {/if}
@@ -322,7 +322,7 @@
                 </div>
 
                 {#if entry.data.rows.length > PREVIEW_CAP}
-                  <p class="mt-2 text-xs text-gray-500">
+                  <p class="mt-2 text-xs text-gray-500 dark:text-slate-400">
                     Preview menampilkan 1.000 baris pertama dari {entry.data.rows.length.toLocaleString('id-ID')} baris —
                     semua baris tetap diproses.
                   </p>
@@ -333,8 +333,8 @@
         {/each}
       </ul>
 
-      <div class="mt-5 border-t border-gray-100 pt-4">
-        <p class="text-xs text-gray-500">
+      <div class="mt-5 border-t border-gray-100 pt-4 dark:border-slate-700/70">
+        <p class="text-xs text-gray-500 dark:text-slate-400">
           File packing menimpa seluruh data lama; file scale di-upsert per internal_id — aman diupload ulang.
         </p>
         <div class="mt-3 flex justify-end">

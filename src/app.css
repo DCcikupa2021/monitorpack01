@@ -1,1 +1,30 @@
 @import "tailwindcss";
+
+/* dark mode berbasis class: toggle .dark di <html> (lihat src/lib/prefs.js) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  html {
+    font-size: 16px;
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  /* ukuran font preferensi: Tailwind pakai rem, jadi ikut skala */
+  html[data-font-size="sm"] {
+    font-size: 14px;
+  }
+  html[data-font-size="lg"] {
+    font-size: 18px;
+  }
+  body {
+    background-color: #f8fafc;
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+  }
+  html.dark body {
+    background-color: #020617;
+    color: #e2e8f0;
+  }
+}

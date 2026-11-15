@@ -31,7 +31,7 @@
 </script>
 
 <main class="flex min-h-screen items-center justify-center bg-[radial-gradient(ellipse_at_top,#1e293b_0%,#0f172a_65%)] p-4">
-  <div class="w-full max-w-sm rounded-2xl bg-white p-8 shadow-2xl ring-1 ring-slate-900/5">
+  <div class="w-full max-w-sm rounded-2xl bg-white p-8 shadow-2xl ring-1 ring-slate-900/5 dark:bg-slate-800 dark:ring-white/10">
     <!-- stable-height logo block: swap in an <img> later without layout shift -->
     <div class="flex h-24 flex-col items-center justify-center gap-2">
       <div class="wordmark" aria-label="Mitra10">
@@ -42,14 +42,14 @@
           <span class="lt orange" style="--i:{i + 5}">{ch}</span>
         {/each}
       </div>
-      <p class="text-center text-sm text-slate-500">Monitoring Pack01</p>
+      <p class="text-center text-sm text-slate-500 dark:text-slate-400">Monitoring Pack01</p>
     </div>
 
-    <h1 class="mb-5 mt-2 text-center text-lg font-semibold text-slate-800">Masuk ke akun Anda</h1>
+    <h1 class="mb-5 mt-2 text-center text-lg font-semibold text-slate-800 dark:text-slate-100">Masuk ke akun Anda</h1>
 
     <form class="space-y-4" onsubmit={submit}>
       <div>
-        <label for="login-username" class="mb-1 block text-sm font-medium text-slate-700">
+        <label for="login-username" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
           Username/Email
         </label>
         <input
@@ -57,12 +57,12 @@
           type="text"
           autocomplete="username"
           bind:value={email}
-          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 transition-colors placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-700/20"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 transition-colors placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
         />
       </div>
 
       <div>
-        <label for="login-password" class="mb-1 block text-sm font-medium text-slate-700">
+        <label for="login-password" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
           Password
         </label>
         <input
@@ -70,11 +70,11 @@
           type="password"
           autocomplete="current-password"
           bind:value={password}
-          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 transition-colors placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-700/20"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 transition-colors placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-700/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
         />
       </div>
 
-      <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
+      <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
         <input
           type="checkbox"
           bind:checked={remember}
@@ -121,6 +121,10 @@
 
   .blue {
     color: #1d4ed8;
+  }
+
+  :global(.dark) .blue {
+    color: #60a5fa;
   }
 
   .orange {

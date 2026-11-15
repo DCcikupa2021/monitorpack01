@@ -2,6 +2,7 @@
   import { supabase } from './lib/supabase.js'
   import Login from './lib/Login.svelte'
   import Sidebar from './lib/Sidebar.svelte'
+  import Topbar from './lib/components/Topbar.svelte'
   import Dashboard from './lib/pages/Dashboard.svelte'
   import Upload from './lib/pages/Upload.svelte'
   import Task from './lib/pages/Task.svelte'
@@ -14,6 +15,7 @@
   let email = $state('')
   let page = $state('dashboard')
   let detailId = $state('')
+  let sidebarOpen = $state(false) // drawer mobile (hamburger ada di Topbar)
 
   // route detail: #/task/detail?id=<shipment_id> — bukan menu sidebar, hanya dari klik baris Task
   function syncHash() {
@@ -60,10 +62,11 @@
 </script>
 
 {#if session}
-  <div class="min-h-screen bg-gradient-to-b from-blue-50/50 via-gray-50 to-gray-50">
-    <Sidebar bind:page {email} />
+  <div class="min-h-screen bg-gradient-to-b from-blue-50/50 via-gray-50 to-gray-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
+    <Topbar {email} onmenu={() => (sidebarOpen = !sidebarOpen)} />
+    <Sidebar bind:page {email} bind:mobileOpen={sidebarOpen} />
     <main
-      class="min-h-screen px-4 pt-14 pb-8 transition-[margin-left] duration-200 ease-out motion-reduce:transition-none sm:px-6 md:pt-8 md:ml-[var(--sidebar-w,240px)] lg:px-8"
+      class="px-4 pt-6 pb-8 transition-[margin-left] duration-200 ease-out motion-reduce:transition-none sm:px-6 md:pt-8 md:ml-[var(--sidebar-w,240px)] lg:px-8"
     >
       {#key page}
         <div class="page-enter">

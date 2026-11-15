@@ -277,18 +277,18 @@
 
 <div class="space-y-6">
   <header>
-    <h1 class="text-2xl font-semibold tracking-tight text-slate-800">Task</h1>
-    <p class="mt-1 text-sm text-gray-500">Daftar task hasil pemrosesan upload.</p>
+    <h1 class="text-2xl font-semibold tracking-tight text-slate-800 dark:text-slate-100">Task</h1>
+    <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Daftar task hasil pemrosesan upload.</p>
   </header>
 
-  <div class="rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
+  <div class="rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6 dark:border-slate-700/70 dark:bg-slate-900 dark:border-slate-700/70 dark:bg-slate-900">
     {#if loading}
-      <p class="text-sm text-gray-500">Memuat data...</p>
+      <p class="text-sm text-gray-500 dark:text-slate-400">Memuat data...</p>
     {:else if error}
-      <p class="text-sm text-red-600">{error}</p>
+      <p class="text-sm text-red-600 dark:text-red-400">{error}</p>
     {:else if rows.length === 0}
-      <p class="font-medium text-slate-800">Belum ada data</p>
-      <p class="mt-1 text-sm text-gray-500">Data akan muncul setelah upload diproses.</p>
+      <p class="font-medium text-slate-800 dark:text-slate-100">Belum ada data</p>
+      <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Data akan muncul setelah upload diproses.</p>
     {:else}
       <!-- search realtime + filter popup -->
       <div class="relative mb-4">
@@ -301,14 +301,14 @@
                   bind:value={qs[i]}
                   placeholder="Cari..."
                   aria-label="Cari task"
-                  class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-slate-700 placeholder:text-gray-400 transition focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-700/30 sm:max-w-sm"
+                  class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-slate-700 placeholder:text-gray-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 transition focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-700/30 sm:max-w-sm"
                 />
                 {#if i > 0}
                   <button
                     type="button"
                     onclick={() => removeTerm(i)}
                     aria-label="Hapus kolom pencarian"
-                    class="shrink-0 rounded-lg border border-gray-200 bg-white p-2 text-gray-500 transition hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                    class="shrink-0 rounded-lg border border-gray-200 bg-white p-2 text-gray-500 transition hover:bg-gray-50 hover:text-gray-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-700/30"
                   >
                     <svg
                       viewBox="0 0 24 24"
@@ -331,7 +331,7 @@
             type="button"
             onclick={addTerm}
             aria-label="Tambah kolom pencarian"
-            class="shrink-0 rounded-lg border border-gray-200 bg-white p-2 text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+            class="shrink-0 rounded-lg border border-gray-200 bg-white p-2 text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-700/30"
           >
             <svg
               viewBox="0 0 24 24"
@@ -351,7 +351,7 @@
             onclick={() => (filterOpen = !filterOpen)}
             aria-label="Filter"
             aria-expanded={filterOpen}
-            class="relative shrink-0 rounded-lg border border-gray-200 bg-white p-2 text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+            class="relative shrink-0 rounded-lg border border-gray-200 bg-white p-2 text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-700/30"
           >
             <svg
               viewBox="0 0 24 24"
@@ -380,7 +380,7 @@
                 filterOpen = false
               }}
               aria-label="Reset filter"
-              class="shrink-0 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-xs font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+              class="shrink-0 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-xs font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-700/30"
             >
               Reset filter
             </button>
@@ -390,7 +390,7 @@
             onclick={openExport}
             aria-label="Export"
             title="Export"
-            class="shrink-0 rounded-lg border border-gray-200 bg-white p-2 text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+            class="shrink-0 rounded-lg border border-gray-200 bg-white p-2 text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-700/30"
           >
             <svg
               viewBox="0 0 24 24"
@@ -413,17 +413,17 @@
           <!-- backdrop: klik di luar popup menutup -->
           <div class="fixed inset-0 z-20" aria-hidden="true" onclick={() => (filterOpen = false)}></div>
           <div
-            class="absolute right-0 top-full z-30 mt-2 w-64 rounded-xl border border-gray-200 bg-white p-3 shadow-lg"
+            class="absolute right-0 top-full z-30 mt-2 w-64 rounded-xl border border-gray-200 bg-white p-3 shadow-lg dark:border-slate-700 dark:bg-slate-800"
             role="dialog"
             aria-label="Filter"
           >
             <div class="flex items-center justify-between">
-              <p class="text-sm font-semibold text-slate-800">Filter</p>
+              <p class="text-sm font-semibold text-slate-800 dark:text-slate-100">Filter</p>
               <button
                 type="button"
                 onclick={() => (filterOpen = false)}
                 aria-label="Tutup filter"
-                class="rounded p-1 text-gray-400 transition hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                class="rounded p-1 text-gray-400 transition hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -442,18 +442,18 @@
             <button
               type="button"
               onclick={resetFilters}
-              class="mt-1 rounded text-xs font-medium text-blue-600 transition hover:text-blue-800 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+              class="mt-1 rounded text-xs font-medium text-blue-600 transition hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
             >
               Reset
             </button>
 
             {#each filterSections as sec (sec.key)}
-              <div class="mt-2 border-t border-gray-100 pt-2">
+              <div class="mt-2 border-t border-gray-100 pt-2 dark:border-slate-700">
                 <button
                   type="button"
                   onclick={() => (openSec = openSec === sec.key ? null : sec.key)}
                   aria-expanded={openSec === sec.key}
-                  class="flex w-full items-center justify-between gap-2 rounded px-1 py-1 text-sm font-medium text-slate-700 transition hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                  class="flex w-full items-center justify-between gap-2 rounded px-1 py-1 text-sm font-medium text-slate-700 transition hover:text-slate-900 dark:text-slate-200 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-700/30"
                 >
                   <span>{sec.label}</span>
                   <svg
@@ -473,9 +473,9 @@
                   <div class="mt-1.5 space-y-1.5 pl-1">
                     {#each optsFor(sec.key) as opt (opt)}
                       <label
-                        class="flex cursor-pointer items-center justify-between gap-3 rounded px-1 py-0.5 transition hover:bg-gray-50"
+                        class="flex cursor-pointer items-center justify-between gap-3 rounded px-1 py-0.5 transition hover:bg-gray-50 dark:hover:bg-slate-700"
                       >
-                        <span class="min-w-0 truncate text-sm text-gray-700">{opt}</span>
+                        <span class="min-w-0 truncate text-sm text-gray-700 dark:text-slate-200">{opt}</span>
                         <input
                           type="checkbox"
                           class="peer sr-only"
@@ -483,13 +483,13 @@
                           onchange={() => toggleVal(sec.key, opt)}
                         />
                         <span
-                          class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-gray-200 transition-colors peer-checked:bg-blue-600 after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow-sm after:transition-transform after:content-[''] peer-checked:after:translate-x-4"
+                          class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-gray-200 transition-colors dark:bg-slate-600 peer-checked:bg-blue-600 after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow-sm after:transition-transform after:content-[''] peer-checked:after:translate-x-4"
                           aria-hidden="true"
                         ></span>
                       </label>
                     {/each}
                     {#if optsFor(sec.key).length === 0}
-                      <p class="px-1 text-xs text-gray-400">Tidak ada data</p>
+                      <p class="px-1 text-xs text-gray-400 dark:text-slate-500">Tidak ada data</p>
                     {/if}
                   </div>
                 {/if}
@@ -501,9 +501,9 @@
 
       {#if view.length === 0}
         {#if searchLabel}
-          <p class="text-sm text-gray-500">Tidak ada hasil untuk "{searchLabel}".</p>
+          <p class="text-sm text-gray-500 dark:text-slate-400">Tidak ada hasil untuk "{searchLabel}".</p>
         {:else}
-          <p class="text-sm text-gray-500">Tidak ada hasil.</p>
+          <p class="text-sm text-gray-500 dark:text-slate-400">Tidak ada hasil.</p>
         {/if}
       {:else}
         <!-- mobile: daftar kartu -->
@@ -511,13 +511,13 @@
           {#each view as entry, i (i)}
             {#if entry.kind === 'group'}
               <li
-                class="flex items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2.5"
+                class="flex items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2.5 dark:border-blue-900/50 dark:bg-blue-950/40"
               >
                 <button
                   type="button"
                   onclick={() => (showNoPick = !showNoPick)}
                   aria-expanded={showNoPick}
-                  class="flex min-w-0 items-center gap-2 rounded px-1 py-0.5 text-sm font-medium text-blue-700 transition-colors hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                  class="flex min-w-0 items-center gap-2 rounded px-1 py-0.5 text-sm font-medium text-blue-700 transition-colors hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -537,7 +537,7 @@
                   <button
                     type="button"
                     onclick={viewHistory}
-                    class="shrink-0 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                    class="shrink-0 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-700/30"
                   >
                     View
                   </button>
@@ -550,23 +550,23 @@
                   onclick={() => {
                     location.hash = `/task/detail?id=${encodeURIComponent(entry.row.shipment_id ?? '')}`
                   }}
-                  class="w-full rounded-xl border border-gray-100 bg-gray-50 p-4 text-left transition active:scale-[0.98] active:border-blue-200 active:bg-blue-50/70 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                  class="w-full rounded-xl border border-gray-100 bg-gray-50 p-4 text-left transition active:scale-[0.98] active:border-blue-200 active:bg-blue-50/70 dark:border-slate-700/70 dark:bg-slate-800/50 dark:active:border-blue-900 dark:active:bg-blue-950/40 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
                 >
                   <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                      <p class="truncate text-sm font-semibold text-slate-800">{entry.row.store ?? ''}</p>
-                      <p class="mt-1.5 inline-flex items-center rounded-md border border-blue-100 bg-blue-50 px-1.5 py-0.5 text-xs font-medium text-blue-700">
+                      <p class="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">{entry.row.store ?? ''}</p>
+                      <p class="mt-1.5 inline-flex items-center rounded-md border border-blue-100 bg-blue-50 px-1.5 py-0.5 text-xs font-medium text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/50 dark:text-blue-300">
                         {fmtTR(entry.row.shipment_id)}
                       </p>
                     </div>
                     <div class="shrink-0 text-right">
-                      <p class="text-[11px] font-medium uppercase tracking-wide text-gray-400">Qty</p>
-                      <p class="text-base font-semibold text-slate-800">{entry.row.qty}</p>
+                      <p class="text-[11px] font-medium uppercase tracking-wide text-gray-400 dark:text-slate-500">Qty</p>
+                      <p class="text-base font-semibold text-slate-800 dark:text-slate-100">{entry.row.qty}</p>
                     </div>
                   </div>
-                  <div class="mt-3 flex items-center justify-between gap-3 border-t border-gray-200/70 pt-2.5">
-                    <span class="text-[11px] font-medium uppercase tracking-wide text-gray-400">Aging</span>
-                    <span class="min-w-0 text-right text-xs {entry.row.date_pick ? 'text-gray-600' : 'text-gray-300'}"
+                  <div class="mt-3 flex items-center justify-between gap-3 border-t border-gray-200/70 pt-2.5 dark:border-slate-700/70">
+                    <span class="text-[11px] font-medium uppercase tracking-wide text-gray-400 dark:text-slate-500">Aging</span>
+                    <span class="min-w-0 text-right text-xs {entry.row.date_pick ? 'text-gray-600 dark:text-slate-300' : 'text-gray-300 dark:text-slate-600'}"
                       >{fmtAging(entry.row.date_pick, now) || '—'}</span
                     >
                   </div>
@@ -581,23 +581,23 @@
           <table class="w-full min-w-max border-separate border-spacing-0 text-left">
             <thead>
               <tr>
-                <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Store</th>
-                <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">TR</th>
-                <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Qty</th>
-                <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Aging</th>
+                <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Store</th>
+                <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">TR</th>
+                <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Qty</th>
+                <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Aging</th>
               </tr>
             </thead>
             <tbody>
               {#each view as entry, i (i)}
                 {#if entry.kind === 'group'}
-                  <tr class="bg-blue-50/70">
-                    <td colspan="4" class="border-b border-gray-100 px-3 py-2">
+                  <tr class="bg-blue-50/70 dark:bg-blue-950/40">
+                    <td colspan="4" class="border-b border-gray-100 px-3 py-2 dark:border-slate-700/70">
                       <div class="flex items-center justify-between gap-3">
                         <button
                           type="button"
                           onclick={() => (showNoPick = !showNoPick)}
                           aria-expanded={showNoPick}
-                          class="flex items-center gap-2 rounded px-1 py-0.5 text-sm font-medium text-blue-700 transition-colors hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                          class="flex items-center gap-2 rounded px-1 py-0.5 text-sm font-medium text-blue-700 transition-colors hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
                         >
                           <svg
                             viewBox="0 0 24 24"
@@ -617,7 +617,7 @@
                           <button
                             type="button"
                             onclick={viewHistory}
-                            class="shrink-0 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                            class="shrink-0 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-700/30"
                           >
                             View
                           </button>
@@ -627,15 +627,15 @@
                   </tr>
                 {:else}
                   <tr
-                    class="cursor-pointer select-none transition-colors {i % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50/60 active:bg-blue-100/70"
+                    class="cursor-pointer select-none transition-colors {i % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-gray-50 dark:bg-slate-800/50'} hover:bg-blue-50/60 dark:hover:bg-slate-800 active:bg-blue-100/70 dark:active:bg-blue-950/40"
                     onclick={() => {
                       location.hash = `/task/detail?id=${encodeURIComponent(entry.row.shipment_id ?? '')}`
                     }}
                   >
-                    <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{entry.row.store ?? ''}</td>
-                    <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{fmtTR(entry.row.shipment_id)}</td>
-                    <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">{entry.row.qty}</td>
-                    <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm {entry.row.date_pick ? 'text-gray-700' : 'text-gray-300'}">{fmtAging(entry.row.date_pick, now) || '—'}</td>
+                    <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700 dark:border-slate-700/70 dark:text-slate-200">{entry.row.store ?? ''}</td>
+                    <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700 dark:border-slate-700/70 dark:text-slate-200">{fmtTR(entry.row.shipment_id)}</td>
+                    <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700 dark:border-slate-700/70 dark:text-slate-200">{entry.row.qty}</td>
+                    <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm dark:border-slate-700/70 {entry.row.date_pick ? 'text-gray-700 dark:text-slate-200' : 'text-gray-300 dark:text-slate-600'}">{fmtAging(entry.row.date_pick, now) || '—'}</td>
                   </tr>
                 {/if}
               {/each}
@@ -660,18 +660,18 @@
       role="dialog"
       aria-modal="true"
       aria-labelledby="export-title"
-      class="relative w-full max-w-sm rounded-xl border border-gray-200 bg-white p-5 shadow-xl"
+      class="relative w-full max-w-sm rounded-xl border border-gray-200 bg-white p-5 shadow-xl dark:border-slate-700 dark:bg-slate-800"
     >
-      <h2 id="export-title" class="text-sm font-semibold text-slate-800">Export Task</h2>
+      <h2 id="export-title" class="text-sm font-semibold text-slate-800 dark:text-slate-100">Export Task</h2>
 
       <fieldset class="mt-4">
-        <legend class="text-xs font-medium uppercase tracking-wide text-gray-500">Format</legend>
+        <legend class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Format</legend>
         <div class="mt-2 flex gap-2">
           {#each ['csv', 'xlsx'] as f (f)}
             <label
               class="flex-1 cursor-pointer rounded-lg border px-3 py-2 text-center text-sm font-medium transition focus-within:ring-2 focus-within:ring-blue-700/30 {exportFmt === f
-                ? 'border-blue-600 bg-blue-50 text-blue-700'
-                : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'}"
+                ? 'border-blue-600 bg-blue-50 text-blue-700 dark:border-blue-500 dark:bg-blue-950/50 dark:text-blue-300'
+                : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'}"
             >
               <input type="radio" name="task-export-format" value={f} bind:group={exportFmt} class="sr-only" />
               .{f}
@@ -680,11 +680,11 @@
         </div>
       </fieldset>
 
-      <p class="mt-4 text-xs text-gray-500">
+      <p class="mt-4 text-xs text-gray-500 dark:text-slate-400">
         {#if exportLoading}
           Memuat data...
         {:else if exportErr}
-          <span class="text-red-600">{exportErr}</span>
+          <span class="text-red-600 dark:text-red-400">{exportErr}</span>
         {:else}
           {exportRows?.length ?? 0} baris siap diexport
         {/if}
@@ -694,7 +694,7 @@
         <button
           type="button"
           onclick={() => (exportOpen = false)}
-          class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+          class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
         >
           Batal
         </button>

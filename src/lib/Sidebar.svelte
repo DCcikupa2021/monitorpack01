@@ -1,7 +1,7 @@
 <script>
   import { supabase } from './supabase.js'
 
-  let { page = $bindable('dashboard'), email = '' } = $props()
+  let { page = $bindable('dashboard'), email = '', mobileOpen = $bindable(false) } = $props()
 
   const KEY = 'pack01_sidebar'
   const initialExpanded = localStorage.getItem(KEY) !== '0'
@@ -16,8 +16,8 @@
   })
 
   // mobile: drawer tertutup (off-canvas) + backdrop; desktop: expand/collapse seperti biasa
+  // hamburger mobile pindah ke Topbar (state diikat dari App.svelte)
   const mobileMQ = window.matchMedia('(max-width: 767px)')
-  let mobileOpen = $state(false)
   // label/brand tampil saat expanded (desktop) atau drawer terbuka (mobile)
   let wide = $derived(expanded || mobileOpen)
 
@@ -70,22 +70,6 @@
 
 <svelte:window onkeydown={onKeydown} />
 
-<!-- trigger hamburger mobile: tampil hanya saat drawer tertutup -->
-{#if !mobileOpen}
-  <button
-    type="button"
-    aria-label="Buka menu"
-    aria-controls="app-sidebar"
-    aria-expanded="false"
-    onclick={() => (mobileOpen = true)}
-    class="fixed left-3 top-3 z-40 flex size-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 shadow-md transition active:scale-95 active:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-700/30 md:hidden"
-  >
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" class="size-5" aria-hidden="true">
-      <path d="M4 7h16M4 12h16M4 17h16" />
-    </svg>
-  </button>
-{/if}
-
 <!-- backdrop: klik untuk tutup drawer (mobile saja) -->
 {#if mobileOpen}
   <button
@@ -98,7 +82,7 @@
 
 <aside
   id="app-sidebar"
-  class="fixed inset-y-0 left-0 z-30 flex w-60 flex-col border-r border-gray-200 bg-white shadow-2xl shadow-slate-900/10 transition-[width,transform] duration-200 ease-out motion-reduce:transition-none md:shadow-none {expanded
+  class="fixed bottom-0 left-0 top-14 z-30 flex w-60 flex-col border-r border-gray-200 bg-white shadow-2xl shadow-slate-900/10 transition-[width,transform] duration-200 ease-out motion-reduce:transition-none dark:border-slate-700/80 dark:bg-slate-900 dark:shadow-slate-950/50 md:shadow-none {expanded
     ? ''
     : 'md:w-[72px]'} {mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}"
 >
@@ -110,7 +94,7 @@
       aria-expanded={wide}
       aria-controls="app-sidebar"
       onclick={toggle}
-      class="relative size-8 shrink-0 rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-700/30 {wide
+      class="relative size-8 shrink-0 rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-700/30 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 {wide
         ? 'open'
         : ''}"
     >
@@ -120,7 +104,7 @@
     </button>
     {#if wide}
       <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-blue-600 to-blue-800 text-xs font-bold text-white">P</span>
-      <span class="truncate text-sm font-semibold text-slate-700">Monitoring Pack01</span>
+      <span class="truncate text-sm font-semibold text-slate-700 dark:text-slate-200">Monitoring Pack01</span>
     {:else}
       <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-blue-600 to-blue-800 text-xs font-bold text-white">P</span>
     {/if}
@@ -137,7 +121,7 @@
           ? ''
           : 'justify-center'} {page === item.id || (item.id === 'task' && page === 'task-detail')
           ? 'bg-blue-700 text-white shadow-sm shadow-blue-700/30'
-          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}"
+          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white'}"
       >
         <svg
           viewBox="0 0 24 24"
@@ -161,13 +145,13 @@
   </nav>
 
   <!-- footer: email + logout -->
-  <div class="space-y-2 border-t border-gray-200 px-3 py-4 {wide ? '' : 'px-2'}">
-    <p class="truncate text-xs text-gray-400" title={email}>{email}</p>
+  <div class="space-y-2 border-t border-gray-200 px-3 py-4 dark:border-slate-700/80 {wide ? '' : 'px-2'}">
+    <p class="truncate text-xs text-gray-500 dark:text-slate-400" title={email}>{email}</p>
     <button
       type="button"
       onclick={logout}
       title={wide ? undefined : 'Logout'}
-      class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 active:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500/30 {wide
+      class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 active:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500/30 dark:text-slate-400 dark:hover:bg-red-950/40 dark:hover:text-red-400 dark:active:bg-red-950/60 {wide
         ? ''
         : 'justify-center'}"
     >
