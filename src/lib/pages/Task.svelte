@@ -15,6 +15,7 @@
   let selTypeTr = $state([])
   let selDklk = $state([])
   let selKirim = $state([])
+  let selAging = $state([])
   let showNoPick = $state(false)
   let now = $state(Date.now())
 
@@ -55,22 +56,39 @@
       .toLowerCase()
   }
 
-  // filter popup: 3 section; OR dalam section, AND antar section, section tanpa toggle aktif = diabaikan
+  // filter popup: 4 section; OR dalam section, AND antar section, section tanpa toggle aktif = diabaikan
   const filterSections = [
     { key: 'type_tr', label: 'Type TR' },
     { key: 'dk_lk', label: 'DK/LK' },
-    { key: 'type_kirim', label: 'Type Kirim' }
+    { key: 'type_kirim', label: 'Type Kirim' },
+    { key: 'aging', label: 'Aging' }
   ]
+
+  // Aging: urutan bucket tetap; opsi tampil hanya yang punya data (lihat agingOpts di bawah)
+  const AGING_ALL = ['0 Hari', '1 Hari', '2 Hari', '3 Hari', '7 Hari']
+
+  function agingBucket(r) {
+    const t = Date.parse(r.date_pick)
+    if (!Number.isFinite(t)) return null
+    const fullDays = Math.floor((now - t) / 86400000)
+    if (fullDays < 1) return '0 Hari'
+    if (fullDays < 2) return '1 Hari'
+    if (fullDays < 3) return '2 Hari'
+    if (fullDays < 7) return '3 Hari'
+    return '7 Hari'
+  }
 
   function optsFor(key) {
     if (key === 'type_tr') return typeTrOpts
     if (key === 'dk_lk') return dklkOpts
+    if (key === 'aging') return agingOpts
     return kirimOpts
   }
 
   function selOf(key) {
     if (key === 'type_tr') return selTypeTr
     if (key === 'dk_lk') return selDklk
+    if (key === 'aging') return selAging
     return selKirim
   }
 
@@ -79,6 +97,7 @@
     const next = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v]
     if (key === 'type_tr') selTypeTr = next
     else if (key === 'dk_lk') selDklk = next
+    else if (key === 'aging') selAging = next
     else selKirim = next
   }
 
@@ -86,6 +105,7 @@
     selTypeTr = []
     selDklk = []
     selKirim = []
+    selAging = []
   }
 
   function addTerm() {
@@ -232,7 +252,30 @@
   let typeTrOpts = $derived([...new Set(rows.map((r) => r.type_tr ?? '').filter(Boolean))].sort())
   let dklkOpts = $derived([...new Set(rows.map((r) => r.dk_lk ?? '').filter(Boolean))].sort())
   let kirimOpts = $derived([...new Set(rows.map((r) => r.type_kirim ?? '').filter(Boolean))].sort())
-  let activeFilterCount = $derived(selTypeTr.length + selDklk.length + selKirim.length)
+  let activeFilterCount = $derived(selTypeTr.length + selDklk.length + selKirim.length + selAging.length)
+
+  // opsi Aging tampil hanya bucket yang punya data saat filter lain aktif (aging sendiri diabaikan)
+  let agingOpts = $derived.by(() => {
+    const terms = qs.map((t) => t.trim().toLowerCase()).filter(Boolean)
+    const present = new Set()
+    for (const r of rows) {
+      if (terms.length && !terms.every((t) => hay(r).includes(t))) continue
+      if (selTypeTr.length && !selTypeTr.includes(r.type_tr ?? '')) continue
+      if (selDklk.length && !selDklk.includes(r.dk_lk ?? '')) continue
+      if (selKirim.length && !selKirim.includes(r.type_kirim ?? '')) continue
+      const b = agingBucket(r)
+      if (b) present.add(b)
+    }
+    return AGING_ALL.filter((b) => present.has(b))
+  })
+
+  // buang pilihan aging yang kehilangan data (misal Terjual dipilih lalu opsi >0 Hari hilang)
+  $effect(() => {
+    const valid = agingOpts
+    if (selAging.some((v) => !valid.includes(v))) {
+      selAging = selAging.filter((v) => valid.includes(v))
+    }
+  })
   let searchLabel = $derived(qs.map((t) => t.trim()).filter(Boolean).join(' '))
 
   // hasil filter + search saja (tanpa group); dipakai view dan disinkronkan ke export
@@ -247,6 +290,8 @@
       if (selTypeTr.length && !selTypeTr.includes(r.type_tr ?? '')) return false
       if (selDklk.length && !selDklk.includes(r.dk_lk ?? '')) return false
       if (selKirim.length && !selKirim.includes(r.type_kirim ?? '')) return false
+      // aging aktif: baris tanpa date_pick ikut dikeluarkan; bucket pakai now (ikut tick)
+      if (selAging.length && !selAging.includes(agingBucket(r))) return false
       return true
     })
   })

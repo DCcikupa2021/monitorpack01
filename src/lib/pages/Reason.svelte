@@ -1,11 +1,48 @@
 <script>
   import Swal from 'sweetalert2'
+  import * as XLSX from 'xlsx'
   import { deleteReason, fetchReasons } from '../reasons.js'
 
   let reasons = $state([])
   let loading = $state(true)
   let error = $state('')
   let showDelete = $state(false)
+
+  // urutan kolom = tabel di bawah
+  const HEADERS = ['STORE', 'TR', 'TYPE TR', 'NO ITEM', 'ITEM NAME', 'QTY', 'DK/LK', 'LOCATION', 'USER', 'COMMENT']
+
+  function exportXlsx() {
+    if (!reasons.length) {
+      Swal.fire({ icon: 'info', title: 'Tidak ada data', text: 'Belum ada reason untuk diexport.' })
+      return
+    }
+    const data = reasons.map((r) => ({
+      STORE: r.store ?? '',
+      TR: r.tr_full ?? r.shipment_id ?? '',
+      'TYPE TR': r.type_tr ?? '',
+      'NO ITEM': r.no_item ?? '',
+      'ITEM NAME': r.item_name ?? '',
+      QTY: r.qty ?? '',
+      'DK/LK': r.dk_lk ?? '',
+      LOCATION: r.location ?? '',
+      USER: r.user_name ?? '',
+      COMMENT: r.reason || r.comment || ''
+    }))
+    const ws = XLSX.utils.json_to_sheet(data, { header: HEADERS })
+    ws['!cols'] = HEADERS.map((h) => {
+      let max = h.length
+      for (const d of data) {
+        const len = String(d[h] ?? '').length
+        if (len > max) max = len
+      }
+      return { wch: Math.min(40, max) }
+    })
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Reason')
+    const d = new Date()
+    const p = (n) => String(n).padStart(2, '0')
+    XLSX.writeFile(wb, `reason-export-${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}.xlsx`)
+  }
 
   $effect(() => {
     let cancelled = false
@@ -52,9 +89,23 @@
       <h1 class="text-2xl font-semibold tracking-tight text-slate-800 dark:text-slate-100">Reason</h1>
       <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Daftar reason terkait task.</p>
     </div>
-    <button
-      type="button"
-      onclick={() => (showDelete = !showDelete)}
+    <div class="flex shrink-0 items-center gap-2">
+      <button
+        type="button"
+        onclick={exportXlsx}
+        aria-label="Export Excel"
+        title="Export Excel"
+        class="flex size-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-400 transition-colors hover:text-emerald-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500 dark:hover:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <path d="M7 10l5 5 5-5" />
+          <path d="M12 15V3" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        onclick={() => (showDelete = !showDelete)}
       aria-label={showDelete ? 'Matikan mode hapus' : 'Aktifkan mode hapus'}
       title={showDelete ? 'Matikan mode hapus' : 'Aktifkan mode hapus'}
       class="flex size-8 shrink-0 items-center justify-center rounded-lg border {showDelete ? 'border-red-200 bg-red-50 text-red-600 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-400' : 'border-gray-200 bg-white text-gray-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500'} transition-colors hover:text-red-600 dark:hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
@@ -66,7 +117,8 @@
         <path d="M10 11v6" />
         <path d="M14 11v6" />
       </svg>
-    </button>
+      </button>
+    </div>
   </header>
 
   <div class="rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6 dark:border-slate-700/70 dark:bg-slate-900">

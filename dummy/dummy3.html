@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard Konsep 3 — Analitik & Aktivitas</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  html { -webkit-text-size-adjust: 100%; }
+  body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+</style>
+</head>
+<body class="bg-gray-50 text-slate-800 antialiased">
+
+<header class="sticky top-0 z-30 border-b border-gray-100 bg-gray-50/90 backdrop-blur">
+  <div class="mx-auto flex max-w-[1400px] items-center justify-between gap-3 px-4 py-3 sm:px-6">
+    <div class="min-w-0">
+      <h1 class="truncate text-lg font-bold tracking-tight text-slate-800 sm:text-2xl">Analitik Task</h1>
+      <p class="truncate text-sm text-gray-500">Distribusi, aging & aktivitas upload.</p>
+    </div>
+    <span class="shrink-0 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 shadow-sm">12 TR</span>
+  </div>
+</header>
+
+<main class="mx-auto max-w-[1400px] px-4 pb-24 pt-5 sm:px-6">
+  <!-- KPI: 2 kolom di HP, 4 kolom sm+ -->
+  <section aria-label="Ringkasan KPI" class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+    <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition active:scale-95 hover:shadow-md">
+      <p class="text-sm font-medium text-gray-500">Total TR</p>
+      <p class="mt-1 text-3xl font-bold text-slate-800 sm:text-2xl">12</p>
+      <p class="mt-1 text-sm text-gray-400">periode hari ini</p>
+    </div>
+    <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition active:scale-95 hover:shadow-md">
+      <p class="text-sm font-medium text-gray-500">Total Qty</p>
+      <p class="mt-1 text-3xl font-bold text-slate-800 sm:text-2xl">5.190</p>
+      <p class="mt-1 text-sm text-gray-400">item terpicking</p>
+    </div>
+    <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition active:scale-95 hover:shadow-md">
+      <p class="text-sm font-medium text-gray-500">Selesai</p>
+      <p class="mt-1 text-3xl font-bold text-emerald-600 sm:text-2xl">3</p>
+      <p class="mt-1 text-sm text-gray-400">25% dari TR</p>
+    </div>
+    <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition active:scale-95 hover:shadow-md">
+      <p class="text-sm font-medium text-gray-500">Aging Terlama</p>
+      <p class="mt-1 text-3xl font-bold text-red-600 sm:text-2xl">12 Hari</p>
+      <p class="mt-1 truncate text-sm text-red-500">TR-3952 · SPBU Cibubur</p>
+    </div>
+  </section>
+
+  <div class="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2">
+    <!-- bar chart -->
+    <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
+      <div class="flex items-center justify-between gap-2">
+        <h2 class="text-sm font-semibold text-slate-800">TR per Hari</h2>
+        <span class="text-sm text-gray-400">7 hari terakhir</span>
+      </div>
+      <div class="mt-5 flex h-44 items-end gap-2 border-b border-gray-200 pb-1 sm:h-52 sm:gap-3">
+        <div class="flex flex-1 flex-col items-center gap-1">
+          <span class="text-sm font-medium text-gray-500">1</span>
+          <div class="w-full rounded-t-md bg-blue-100 transition hover:bg-blue-200" style="height: 22%"></div>
+        </div>
+        <div class="flex flex-1 flex-col items-center gap-1">
+          <span class="text-sm font-medium text-gray-500">3</span>
+          <div class="w-full rounded-t-md bg-blue-200 transition hover:bg-blue-300" style="height: 66%"></div>
+        </div>
+        <div class="flex flex-1 flex-col items-center gap-1">
+          <span class="text-sm font-medium text-gray-500">2</span>
+          <div class="w-full rounded-t-md bg-blue-200 transition hover:bg-blue-300" style="height: 44%"></div>
+        </div>
+        <div class="flex flex-1 flex-col items-center gap-1">
+          <span class="text-sm font-medium text-gray-500">4</span>
+          <div class="w-full rounded-t-md bg-blue-600 transition hover:bg-blue-700" style="height: 88%"></div>
+        </div>
+        <div class="flex flex-1 flex-col items-center gap-1">
+          <span class="text-sm font-medium text-gray-500">1</span>
+          <div class="w-full rounded-t-md bg-blue-100 transition hover:bg-blue-200" style="height: 22%"></div>
+        </div>
+        <div class="flex flex-1 flex-col items-center gap-1">
+          <span class="text-sm font-medium text-gray-500">0</span>
+          <div class="w-full rounded-t-md bg-gray-100 transition hover:bg-gray-200" style="height: 4%"></div>
+        </div>
+        <div class="flex flex-1 flex-col items-center gap-1">
+          <span class="text-sm font-medium text-gray-500">1</span>
+          <div class="w-full rounded-t-md bg-blue-100 transition hover:bg-blue-200" style="height: 22%"></div>
+        </div>
+      </div>
+      <div class="mt-2 flex gap-2 text-center text-sm text-gray-400">
+        <span class="flex-1">Sen</span><span class="flex-1">Sel</span><span class="flex-1">Rab</span><span class="flex-1">Kam</span><span class="flex-1">Jum</span><span class="flex-1">Sab</span><span class="flex-1">Min</span>
+      </div>
+    </div>
+
+    <!-- donut -->
+    <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
+      <div class="flex items-center justify-between gap-2">
+        <h2 class="text-sm font-semibold text-slate-800">Split DK/LK & Type Kirim</h2>
+        <span class="text-sm text-gray-400">12 TR</span>
+      </div>
+      <div class="mt-5 flex flex-col items-center gap-6 sm:flex-row">
+        <div class="relative shrink-0">
+          <div class="h-36 w-36 rounded-full sm:h-40 sm:w-40" style="background: conic-gradient(#2563eb 0deg 240deg, #7c3aed 240deg 360deg);"></div>
+          <div class="absolute inset-0 m-auto flex h-20 w-20 flex-col items-center justify-center rounded-full bg-white text-center shadow-inner">
+            <span class="text-xl font-bold text-slate-800">12</span>
+            <span class="text-sm text-gray-400">TR</span>
+          </div>
+        </div>
+        <div class="w-full space-y-3">
+          <div class="flex items-center gap-2 text-sm">
+            <span class="h-3 w-3 rounded-sm bg-blue-600"></span>
+            <span class="flex-1 text-gray-700">Dalam Kota (DK)</span>
+            <span class="font-semibold text-slate-800">8 · 67%</span>
+          </div>
+          <div class="flex items-center gap-2 text-sm">
+            <span class="h-3 w-3 rounded-sm bg-purple-600"></span>
+            <span class="flex-1 text-gray-700">Luar Kota (LK)</span>
+            <span class="font-semibold text-slate-800">4 · 33%</span>
+          </div>
+          <div class="border-t border-gray-100 pt-3">
+            <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Type Kirim</p>
+            <div class="mt-2 space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="h-3 w-3 rounded-sm bg-emerald-500"></span>
+                <span class="flex-1 text-gray-700">Darat</span>
+                <span class="font-semibold text-slate-800">9</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="h-3 w-3 rounded-sm bg-amber-500"></span>
+                <span class="flex-1 text-gray-700">Laut</span>
+                <span class="font-semibold text-slate-800">2</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="h-3 w-3 rounded-sm bg-sky-500"></span>
+                <span class="flex-1 text-gray-700">Udara</span>
+                <span class="font-semibold text-slate-800">1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- aging terlama: kartu di HP, tabel md+ -->
+    <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-sm font-semibold text-slate-800">Aging Terlama</h2>
+        <span class="rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-600">4 TR &gt; 7 hari</span>
+      </div>
+
+      <!-- mobile: daftar kartu -->
+      <ul class="space-y-3 md:hidden">
+        <li class="cursor-pointer rounded-2xl border border-gray-100 bg-gray-50 p-4 transition active:scale-[0.98] active:border-red-200 active:bg-red-50/60">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate text-base font-semibold text-slate-800">SPBU Cibubur</p>
+              <p class="mt-1 text-sm font-medium text-gray-500">TR-3952</p>
+            </div>
+            <span class="shrink-0 rounded-full border border-amber-100 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">Packing Pending</span>
+          </div>
+          <p class="mt-3 border-t border-gray-200/70 pt-3 text-base font-bold text-red-600">12 Hari 1 Jam 3 Detik</p>
+        </li>
+        <li class="cursor-pointer rounded-2xl border border-gray-100 bg-gray-50 p-4 transition active:scale-[0.98] active:border-red-200 active:bg-red-50/60">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate text-base font-semibold text-slate-800">MITRA10</p>
+              <p class="mt-1 text-sm font-medium text-gray-500">TR-3942</p>
+            </div>
+            <span class="shrink-0 rounded-full border border-amber-100 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">Packing Pending</span>
+          </div>
+          <p class="mt-3 border-t border-gray-200/70 pt-3 text-base font-bold text-red-600">9 Hari 2 Jam 10 Menit</p>
+        </li>
+        <li class="cursor-pointer rounded-2xl border border-gray-100 bg-gray-50 p-4 transition active:scale-[0.98] active:border-red-200 active:bg-red-50/60">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate text-base font-semibold text-slate-800">Gading Serpong</p>
+              <p class="mt-1 text-sm font-medium text-gray-500">ATO-69045</p>
+            </div>
+            <span class="shrink-0 rounded-full border border-amber-100 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">Packing Pending</span>
+          </div>
+          <p class="mt-3 border-t border-gray-200/70 pt-3 text-base font-bold text-red-600">8 Hari 5 Jam 2 Menit</p>
+        </li>
+        <li class="cursor-pointer rounded-2xl border border-gray-100 bg-gray-50 p-4 transition active:scale-[0.98] active:border-red-200 active:bg-red-50/60">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate text-base font-semibold text-slate-800">MITRA10 Bintaro</p>
+              <p class="mt-1 text-sm font-medium text-gray-500">TR-3947</p>
+            </div>
+            <span class="shrink-0 rounded-full border border-sky-100 bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-700">Picking</span>
+          </div>
+          <p class="mt-3 border-t border-gray-200/70 pt-3 text-base font-bold text-red-600">7 Hari 20 Jam 5 Menit</p>
+        </li>
+        <li class="cursor-pointer rounded-2xl border border-gray-100 bg-gray-50 p-4 transition active:scale-[0.98] active:border-red-200 active:bg-red-50/60">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate text-base font-semibold text-slate-800">Toko Serba Ada Bekasi</p>
+              <p class="mt-1 text-sm font-medium text-gray-500">ATO-69062</p>
+            </div>
+            <span class="shrink-0 rounded-full border border-amber-100 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">Packing Pending</span>
+          </div>
+          <p class="mt-3 border-t border-gray-200/70 pt-3 text-base font-bold text-amber-600">5 Hari 3 Jam 22 Menit</p>
+        </li>
+      </ul>
+
+      <!-- md+: tabel -->
+      <div class="hidden overflow-x-auto md:block">
+        <table class="w-full border-separate border-spacing-0 text-left">
+          <thead>
+            <tr>
+              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">TR</th>
+              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Store</th>
+              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Aging</th>
+              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">Status1</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="cursor-pointer bg-white transition-colors hover:bg-red-50/50">
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">TR-3952</td>
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">SPBU Cibubur</td>
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm font-semibold text-red-600">12 Hari 1 Jam 3 Detik</td>
+              <td class="border-b border-gray-100 px-3 py-2 text-sm"><span class="inline-flex items-center rounded-full border border-amber-100 bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700">Packing Pending</span></td>
+            </tr>
+            <tr class="cursor-pointer bg-gray-50 transition-colors hover:bg-red-50/50">
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">TR-3942</td>
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">MITRA10</td>
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm font-semibold text-red-600">9 Hari 2 Jam 10 Menit</td>
+              <td class="border-b border-gray-100 px-3 py-2 text-sm"><span class="inline-flex items-center rounded-full border border-amber-100 bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700">Packing Pending</span></td>
+            </tr>
+            <tr class="cursor-pointer bg-white transition-colors hover:bg-red-50/50">
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">ATO-69045</td>
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">Gading Serpong</td>
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm font-semibold text-red-600">8 Hari 5 Jam 2 Menit</td>
+              <td class="border-b border-gray-100 px-3 py-2 text-sm"><span class="inline-flex items-center rounded-full border border-amber-100 bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700">Packing Pending</span></td>
+            </tr>
+            <tr class="cursor-pointer bg-gray-50 transition-colors hover:bg-red-50/50">
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">TR-3947</td>
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">MITRA10 Bintaro</td>
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm font-semibold text-red-600">7 Hari 20 Jam 5 Menit</td>
+              <td class="border-b border-gray-100 px-3 py-2 text-sm"><span class="inline-flex items-center rounded-full border border-sky-100 bg-sky-50 px-2 py-0.5 text-xs font-semibold text-sky-700">Picking</span></td>
+            </tr>
+            <tr class="cursor-pointer bg-white transition-colors hover:bg-red-50/50">
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">ATO-69062</td>
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700">Toko Serba Ada Bekasi</td>
+              <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm font-medium text-amber-600">5 Hari 3 Jam 22 Menit</td>
+              <td class="border-b border-gray-100 px-3 py-2 text-sm"><span class="inline-flex items-center rounded-full border border-amber-100 bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700">Packing Pending</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- activity feed -->
+    <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
+      <div class="mb-4 flex items-center justify-between gap-2">
+        <h2 class="text-sm font-semibold text-slate-800">Aktivitas Terbaru</h2>
+        <span class="text-sm text-gray-400">log transaksi</span>
+      </div>
+      <ol class="relative space-y-5 border-l border-gray-200 pl-5">
+        <li class="cursor-pointer rounded-xl p-2 transition hover:bg-gray-50 active:scale-[0.98]">
+          <span class="absolute -left-[5px] mt-2 h-2.5 w-2.5 rounded-full bg-blue-600 ring-4 ring-white"></span>
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span class="rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">Pick &amp; Put confirmation</span>
+            <span class="text-sm text-gray-400">Picking</span>
+            <span class="ml-auto text-sm text-gray-400">10:42</span>
+          </div>
+          <p class="mt-2 text-base font-medium leading-snug text-slate-800">PLATINUM FT.KW.A 50X50CM LUNA DARK GREY REC</p>
+          <p class="mt-1 text-sm text-gray-500">Location <span class="font-semibold text-gray-600">PACK01</span> · TR-3943 · qty 96</p>
+        </li>
+        <li class="cursor-pointer rounded-xl p-2 transition hover:bg-gray-50 active:scale-[0.98]">
+          <span class="absolute -left-[5px] mt-2 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-4 ring-white"></span>
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span class="rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">Pick confirmation</span>
+            <span class="text-sm text-gray-400">Picking</span>
+            <span class="ml-auto text-sm text-gray-400">10:37</span>
+          </div>
+          <p class="mt-2 text-base font-medium leading-snug text-slate-800">KERANJANG BELANJA 24L HITAM</p>
+          <p class="mt-1 text-sm text-gray-500">Location <span class="font-semibold text-gray-600">R011480401</span> · ATO-69045 · qty 48</p>
+        </li>
+        <li class="cursor-pointer rounded-xl p-2 transition hover:bg-gray-50 active:scale-[0.98]">
+          <span class="absolute -left-[5px] mt-2 h-2.5 w-2.5 rounded-full bg-amber-500 ring-4 ring-white"></span>
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span class="rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">Pick &amp; Put confirmation</span>
+            <span class="text-sm text-gray-400">Picking</span>
+            <span class="ml-auto text-sm text-gray-400">10:31</span>
+          </div>
+          <p class="mt-2 text-base font-medium leading-snug text-slate-800">SEMEN TIGA RODA 40KG</p>
+          <p class="mt-1 text-sm text-gray-500">Location <span class="font-semibold text-gray-600">CROSSDOCK</span> · TR-3947 · qty 210</p>
+        </li>
+        <li class="cursor-pointer rounded-xl p-2 transition hover:bg-gray-50 active:scale-[0.98]">
+          <span class="absolute -left-[5px] mt-2 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-4 ring-white"></span>
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span class="rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">Pick confirmation</span>
+            <span class="text-sm text-gray-400">Picking</span>
+            <span class="ml-auto text-sm text-gray-400">10:18</span>
+          </div>
+          <p class="mt-2 text-base font-medium leading-snug text-slate-800">CAT TEMBOK VINILEX 5KG PUTIH</p>
+          <p class="mt-1 text-sm text-gray-500">Location <span class="font-semibold text-gray-600">R011480401</span> · TR-3951 · qty 72</p>
+        </li>
+        <li class="cursor-pointer rounded-xl p-2 transition hover:bg-gray-50 active:scale-[0.98]">
+          <span class="absolute -left-[5px] mt-2 h-2.5 w-2.5 rounded-full bg-gray-400 ring-4 ring-white"></span>
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span class="rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">Pick &amp; Put confirmation</span>
+            <span class="text-sm text-gray-400">Picking</span>
+            <span class="ml-auto text-sm text-gray-400">09:56</span>
+          </div>
+          <p class="mt-2 text-base font-medium leading-snug text-slate-800">PIPA PVC RUCIKA 3" AW 4M</p>
+          <p class="mt-1 text-sm text-gray-500">Location <span class="font-semibold text-gray-600">PACK01</span> · ATO-69070 · qty 30</p>
+        </li>
+      </ol>
+    </div>
+  </div>
+</main>
+</body>
+</html>

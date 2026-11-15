@@ -48,6 +48,27 @@
     Swal.fire({ icon: 'info', title: 'Tidak tersedia', text: 'Mohon upload ulang' })
   }
 
+  // kategori = 2 digit kiri Item No (rumus excel LEFT(item,2))
+  const CATEGORIES = {
+    '01': 'FLOORING AND WALL',
+    '02': 'BATHROOM',
+    '03': 'PLUMBING',
+    '04': 'PAINT AND SUNDRIES',
+    '05': 'BUILDING MATERIAL',
+    '06': 'DOORS AND WINDOWS',
+    '07': 'ELECTRICAL AND LIGHTING',
+    '08': 'HARDWARE',
+    '09': 'TOOLS',
+    '10': 'HOUSEWARE & HOBBIES',
+    '11': 'APPLIANCES',
+    '13': 'KITCHEN'
+  }
+
+  function categoryOf(item) {
+    const code = String(item ?? '').slice(0, 2)
+    return CATEGORIES[code] ? `${code} ${CATEGORIES[code]}` : ''
+  }
+
   $effect(() => {
     let cancelled = false
     loading = true
@@ -287,6 +308,9 @@
               <div class="min-w-0">
                 <p class="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">{it.item ?? ''}</p>
                 <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">{it.description ?? ''}</p>
+                {#if categoryOf(it.item)}
+                  <p class="mt-1 text-xs font-medium text-blue-700 dark:text-blue-300">{categoryOf(it.item)}</p>
+                {/if}
               </div>
               <span class="shrink-0 rounded-lg border border-blue-100 bg-blue-50 px-2.5 py-1 text-sm font-semibold text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/50 dark:text-blue-300">{it.qty}</span>
             </div>
@@ -302,6 +326,26 @@
                 <button type="button" class="mt-1.5 text-sm text-blue-600 dark:text-blue-400 hover:underline" onclick={viewNA}>view</button>
               {/if}
             </div>
+            <div class="mt-3 flex justify-end border-t border-gray-100 pt-3 dark:border-slate-700/70">
+              {#if reasonMap.has(keyOf(it.item, locs[0]))}
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1 rounded-lg border border-blue-600 bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                  onclick={() => openReason(it)}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="size-3" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                  Reason
+                </button>
+              {:else}
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 shadow-sm transition hover:bg-gray-50 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-700/30"
+                  onclick={() => openReason(it)}
+                >
+                  Reason
+                </button>
+              {/if}
+            </div>
           </li>
         {/each}
       </ul>
@@ -312,6 +356,7 @@
             <tr>
               <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">No Item</th>
               <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Item Name</th>
+              <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Category</th>
               <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Location</th>
               <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Qty</th>
               <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Reason</th>
@@ -323,6 +368,7 @@
               <tr class="transition-colors {i % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-gray-50 dark:bg-slate-800/50'} hover:bg-blue-50/60 dark:hover:bg-slate-800">
                 <td rowspan={locs.length || 1} class="whitespace-nowrap border-b border-gray-100 px-3 py-2 align-top text-sm text-gray-700 dark:border-slate-700/70 dark:text-slate-200">{it.item ?? ''}</td>
                 <td rowspan={locs.length || 1} class="border-b border-gray-100 px-3 py-2 align-top text-sm text-gray-700 dark:border-slate-700/70 dark:text-slate-200">{it.description ?? ''}</td>
+                <td rowspan={locs.length || 1} class="whitespace-nowrap border-b border-gray-100 px-3 py-2 align-top text-sm text-gray-700 dark:border-slate-700/70 dark:text-slate-200">{categoryOf(it.item) || '—'}</td>
                 {#if locs.length}
                   <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-700 dark:text-slate-200 {locs.length > 1 ? '' : 'border-b border-gray-100 dark:border-slate-700/70'}">{locs[0]}</td>
                 {:else}
