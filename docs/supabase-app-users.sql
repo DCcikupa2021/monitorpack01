@@ -1,5 +1,6 @@
 -- app_users + create_app_user — salin ke SQL Editor project owkvioooumcipiyldnmx
 -- Membuat file baru; tidak mengganti/mengubah apapun yang sudah ada.
+-- Sudah dijalankan di project (2026-11-15): termasuk fix auth.identities.
 
 create table if not exists public.app_users (
   id uuid primary key default gen_random_uuid(),
@@ -20,16 +21,18 @@ language plpgsql
 security definer
 set search_path = ''
 as $$
+declare
+  v_id uuid;
 begin
-  -- email_confirmed_at diisi: skip konfirmasi email. Kolom nullable yang lebih baru
-  -- (confirmation_token, dll) sengaja tidak diisi.
+  v_id := gen_random_uuid();
+
   insert into auth.users (
     instance_id, id, aud, role, email, encrypted_password,
     email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
     created_at, updated_at
   ) values (
     extensions.uuid_nil(),
-    gen_random_uuid(),
+    v_id,
     'authenticated',
     'authenticated',
     p_email,
@@ -41,9 +44,27 @@ begin
     now()
   );
 
+  -- login GoTrue join auth.identities; tanpa baris ini error "Database error querying schema"
+  -- kolom email di identities generated dari identity_data, jangan diisi eksplisit
+  insert into auth.identities (
+    provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at
+  ) values (
+    v_id, v_id,
+    jsonb_build_object('sub', v_id, 'email', p_email, 'email_verified', true, 'phone_verified', false),
+    'email', now(), now(), now()
+  );
+
   insert into public.app_users (email, password) values (p_email, p_password);
 end;
 $$;
 
 revoke execute on function public.create_app_user(text, text) from anon;
 grant execute on function public.create_app_user(text, text) to authenticated;
+
+-- backfill: user yang dibuat function lama (identities kosong)
+insert into auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
+select u.id, u.id,
+  jsonb_build_object('sub', u.id, 'email', u.email, 'email_verified', true, 'phone_verified', false),
+  'email', now(), now(), now()
+from auth.users u
+where not exists (select 1 from auth.identities i where i.user_id = u.id);
