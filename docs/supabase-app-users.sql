@@ -1,6 +1,6 @@
 -- app_users + create_app_user — salin ke SQL Editor project owkvioooumcipiyldnmx
 -- Membuat file baru; tidak mengganti/mengubah apapun yang sudah ada.
--- Sudah dijalankan di project (2026-11-15): termasuk fix auth.identities.
+-- Sudah dijalankan di project (2026-11-15): fix auth.identities + fix token NULL.
 
 create table if not exists public.app_users (
   id uuid primary key default gen_random_uuid(),
@@ -26,9 +26,13 @@ declare
 begin
   v_id := gen_random_uuid();
 
+  -- kolom token wajib '' bukan NULL: GoTrue scan ke string, NULL = login error
+  -- ("Database error querying schema" / converting NULL to string is unsupported)
   insert into auth.users (
     instance_id, id, aud, role, email, encrypted_password,
     email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
+    confirmation_token, recovery_token, email_change,
+    email_change_token_new, email_change_token_current, reauthentication_token,
     created_at, updated_at
   ) values (
     extensions.uuid_nil(),
@@ -40,8 +44,9 @@ begin
     now(),
     '{"provider":"email","providers":["email"]}'::jsonb,
     '{}'::jsonb,
-    now(),
-    now()
+    '', '', '',
+    '', '', '',
+    now(), now()
   );
 
   -- login GoTrue join auth.identities; tanpa baris ini error "Database error querying schema"
@@ -68,3 +73,15 @@ select u.id, u.id,
   'email', now(), now(), now()
 from auth.users u
 where not exists (select 1 from auth.identities i where i.user_id = u.id);
+
+-- aman-kan semua user lama: NULL token -> ''
+update auth.users set
+  confirmation_token = coalesce(confirmation_token, ''),
+  recovery_token = coalesce(recovery_token, ''),
+  email_change = coalesce(email_change, ''),
+  email_change_token_new = coalesce(email_change_token_new, ''),
+  email_change_token_current = coalesce(email_change_token_current, ''),
+  reauthentication_token = coalesce(reauthentication_token, '')
+where confirmation_token is null or recovery_token is null or email_change is null
+   or email_change_token_new is null or email_change_token_current is null
+   or reauthentication_token is null;
