@@ -1,8 +1,12 @@
 <script>
-  import { onMount } from 'svelte'
   import Swal from 'sweetalert2'
   import { createAppUser, fetchAppUsers } from '../appUsers.js'
   import { theme, fontSize, notifications } from '../prefs.js'
+
+  // email sesi dari App; lokal `email` di bawah = form input user baru
+  let { email: sessionEmail = '' } = $props()
+
+  const isAdmin = $derived(sessionEmail.toLowerCase() === 'administrator@mitra10.com')
 
   // --- Fitur 1: user baru ---
   let email = $state('')
@@ -26,7 +30,10 @@
     users = data ?? []
   }
 
-  onMount(loadUsers)
+  $effect(() => {
+    if (!isAdmin) return
+    loadUsers()
+  })
 
   async function submit(e) {
     e.preventDefault()
@@ -86,6 +93,7 @@
   </header>
 
   <!-- Fitur 1: tambah user + daftar user -->
+  {#if isAdmin}
   <section class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-slate-700/70 dark:bg-slate-900 sm:p-6">
     <div class="flex items-start justify-between gap-3">
       <div>
@@ -194,6 +202,22 @@
       {/if}
     </div>
   </section>
+  {:else}
+    <section class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-slate-700/70 dark:bg-slate-900 sm:p-6">
+      <div class="flex flex-col items-center justify-center gap-3 py-6 text-center">
+        <span class="flex size-11 items-center justify-center rounded-full bg-gray-100 text-gray-500 dark:bg-slate-800 dark:text-slate-400">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+        </span>
+        <div>
+          <h2 class="text-base font-semibold text-slate-800 dark:text-slate-100">Akses terbatas</h2>
+          <p class="mt-0.5 text-sm text-gray-500 dark:text-slate-400">Halaman ini hanya untuk administrator.</p>
+        </div>
+      </div>
+    </section>
+  {/if}
 
   <!-- Fitur 2: preferensi tampilan -->
   <section class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-slate-700/70 dark:bg-slate-900 sm:p-6">

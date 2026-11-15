@@ -86,7 +86,7 @@
           {:else if page === 'reason'}
             <Reason />
           {:else if page === 'pengaturan'}
-            <Pengaturan />
+            <Pengaturan {email} />
           {/if}
         </div>
       {/key}
