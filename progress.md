@@ -48,6 +48,7 @@ Update terakhir: 2026-11-15
 - [x] TaskDetail: kolom Category (2026-11-15, b276f8f): `LEFT(item, 2)` → kamus 12 kode (01 FLOORING AND WALL … 13 KITCHEN, tanpa 12); tampil `01 FLOORING AND WALL` di kolom tabel + baris mobile; kode tak dikenal → `—`.
 - [x] TaskDetail: tombol Reason di kartu mobile (2026-11-15): kartu <640px sebelumnya hanya Location (Reason cuma muncul di landscape/tabel `sm:`) → tiap kartu kini punya baris Reason di bawah, style sama dengan tabel (tersimpan = biru + centang).
 - [x] Reason: export Excel (2026-11-15, b276f8f): ikon unduh di header → XLSX via `xlsx`, kolom = tabel (STORE/TR/TYPE TR/NO ITEM/ITEM NAME/QTY/DK/LK/LOCATION/USER/COMMENT, `reason` menang atas `comment`), sheet `Reason`, file `reason-export-YYYY-MM-DD.xlsx`, data kosong → Swal info.
+- [x] Task: filter/search bertahan antar detail (2026-11-16): buka detail → `{#key page}` remount Task → state lokal hilang. Fix: `taskFilterState.js` (module store) simpan `qs` + `selTypeTr`/`selDklk`/`selKirim`/`selAging` + `showNoPick`; `Task.svelte` hydrasi dari store saat mount + `$effect` tulis balik tiap berubah. Kembali dari detail → list tampil dengan filter + search sama.
 
 ## Keputusan
 

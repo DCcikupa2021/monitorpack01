@@ -9,15 +9,26 @@
   let rows = $state([])
   let loading = $state(true)
   let error = $state('')
-  let qs = $state(['']) // tiap input pencarian; elemen 0 tidak bisa dihapus
+  // hydrasi dari module store supaya filter/search tetap ada setelah balik dari detail
+  let qs = $state(taskFilterState.qs?.length ? [...taskFilterState.qs] : ['']) // tiap input pencarian; elemen 0 tidak bisa dihapus
   let filterOpen = $state(false)
   let openSec = $state('type_tr')
-  let selTypeTr = $state([])
-  let selDklk = $state([])
-  let selKirim = $state([])
-  let selAging = $state([])
-  let showNoPick = $state(false)
+  let selTypeTr = $state(taskFilterState.selTypeTr ? [...taskFilterState.selTypeTr] : [])
+  let selDklk = $state(taskFilterState.selDklk ? [...taskFilterState.selDklk] : [])
+  let selKirim = $state(taskFilterState.selKirim ? [...taskFilterState.selKirim] : [])
+  let selAging = $state(taskFilterState.selAging ? [...taskFilterState.selAging] : [])
+  let showNoPick = $state(!!taskFilterState.showNoPick)
   let now = $state(Date.now())
+
+  // tulis balik ke module store tiap berubah (effect pertama jalan saat mount juga)
+  $effect(() => {
+    taskFilterState.qs = qs
+    taskFilterState.selTypeTr = selTypeTr
+    taskFilterState.selDklk = selDklk
+    taskFilterState.selKirim = selKirim
+    taskFilterState.selAging = selAging
+    taskFilterState.showNoPick = showNoPick
+  })
 
   // tampilan saja: PREFIX-SEQ, stem 7 digit, seq = sisanya (leading zero dibuang); raw di DB tidak diubah
   function fmtTR(s) {
