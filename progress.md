@@ -1,6 +1,6 @@
 # Progress — Monitoring Pack01
 
-Update terakhir: 2026-11-15
+Update terakhir: 2026-11-21
 
 ## Selesai
 
@@ -49,6 +49,11 @@ Update terakhir: 2026-11-15
 - [x] TaskDetail: tombol Reason di kartu mobile (2026-11-15): kartu <640px sebelumnya hanya Location (Reason cuma muncul di landscape/tabel `sm:`) → tiap kartu kini punya baris Reason di bawah, style sama dengan tabel (tersimpan = biru + centang).
 - [x] Reason: export Excel (2026-11-15, b276f8f): ikon unduh di header → XLSX via `xlsx`, kolom = tabel (STORE/TR/TYPE TR/NO ITEM/ITEM NAME/QTY/DK/LK/LOCATION/USER/COMMENT, `reason` menang atas `comment`), sheet `Reason`, file `reason-export-YYYY-MM-DD.xlsx`, data kosong → Swal info.
 - [x] Task: filter/search bertahan antar detail (2026-11-16): buka detail → `{#key page}` remount Task → state lokal hilang. Fix: `taskFilterState.js` (module store) simpan `qs` + `selTypeTr`/`selDklk`/`selKirim`/`selAging` + `showNoPick`; `Task.svelte` hydrasi dari store saat mount + `$effect` tulis balik tiap berubah. Kembali dari detail → list tampil dengan filter + search sama.
+- [x] Upload RP30 Transfer Request Outstanding (2026-11-21): deteksi marker `TRANSFER REQUEST NO` + `ORDER DATE` (header row 3, data row 4, auto-scan 15 baris), tabel Supabase `transfer_requests` (RLS select/insert/delete). Preview tampil semua 33 kolom, yang masuk DB hanya `transfer_request_no` + `order_date` (allowlist `KEEP` di `upload.js`). Replace-snapshot seperti packing (hapus lama, tulis baru). DDL di `docs/supabase-upload-tables.sql`.
+- [x] Purge scale otomatis (2026-11-21): fungsi `purge_scale_without_transfer()` — hapus baris `scale_transactions` yang `reference_id`-nya tidak ada di `transfer_request_no` (atau NULL), tanpa konfirmasi. Dijalankan **setelah upload RP30** (bukan setelah scale — keputusan dipindah supaya urutan/lupa upload user tidak menghapus data baru). `reference_id` tidak di-dedup: 1 TR dengan 3 item = 3 baris tetap 3. Fungsi lolos tes (assert hapus/pertahankan + rollback).
+- [x] Purge reason otomatis (2026-11-21): fungsi `purge_reasons_without_packing()` — hapus reason yang `shipment_id` + `no_item` tidak ada di `packing_reports`, jalan setelah upload packing (polo sama: snapshot packing baru = sumber keputusan). 7 reason lama tanpa packing dipurge manual 2026-11-21 (8 → 1 baris). Alasan pilih hapus-bukan-filter: keputusan user.
+- [x] Badge Reason di list Task (2026-11-21): kolom "Reason" desktop + baris pill amber di kartu mobile — teks reason dipotong, `title` hover = teks lengkap, chip "N reason" bila satu TR punya banyak; tanpa `—` abu-abu. Fetch `reasons` paralel dengan query Task; gagal fetch → list tetap tampil tanpa badge. Group header colspan 4 → 5.
+- [x] Dashboard Summary Category (2026-11-21): panel total unit cost per `category_name` dari `item_unit_cost_lookup` (gagal/kosong = panel kosong, bukan error halaman) + fix `categoryOf` TaskDetail. `dummy/*.html` dihapus dari repo.
 
 ## Keputusan
 
@@ -72,7 +77,7 @@ npm run build   # produksi → dist/
 
 ## Next
 
-1. Uji end-to-end di browser: upload (Proses → cek baris di Supabase), reason delete + export Reason, export Task, filter Aging, dashboard live, login 2 akun (admin + user biasa), ganti mode gelap, tampilan HP (Reason mobile, dashboard 360px).
+1. Uji end-to-end di browser: upload RP30 asli (belum ada contoh file di repo), upload packing/scale → cek purge jalan, reason badge di list Task, reason delete + export Reason, export Task, filter Aging, dashboard live, login 2 akun (admin + user biasa), ganti mode gelap, tampilan HP (Reason mobile, dashboard 360px).
 2. Deploy Cloudflare Pages (env `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`).
 3. Review copy login (heading "Masuk ke akun Anda" ditambahkan designer, bisa diubah).
 4. KPI Dashboard "Selesai" = 0 selama `status1` semua `Packing Pending` — perlu definisi status lanjutan bila dihitung.
