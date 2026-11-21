@@ -64,3 +64,47 @@ create policy "packing delete" on public.packing_reports for delete to authentic
 create policy "scale read" on public.scale_transactions for select to authenticated using (true);
 create policy "scale insert" on public.scale_transactions for insert to authenticated with check (true);
 create policy "scale delete" on public.scale_transactions for delete to authenticated using (true);
+
+create table if not exists public.transfer_requests (
+  id uuid primary key default gen_random_uuid(),
+  transfer_request_no text,
+  order_date date,
+  created_at timestamptz not null default now(),
+  created_by uuid references auth.users (id)
+);
+
+alter table public.transfer_requests enable row level security;
+
+create policy "transfer read" on public.transfer_requests for select to authenticated using (true);
+create policy "transfer insert" on public.transfer_requests for insert to authenticated with check (true);
+create policy "transfer delete" on public.transfer_requests for delete to authenticated using (true);
+
+create or replace function public.purge_scale_without_transfer()
+returns void
+language sql
+security invoker
+set search_path = public
+as $$
+  delete from public.scale_transactions s
+  where s.reference_id is null
+     or not exists (
+       select 1
+       from public.transfer_requests t
+       where t.transfer_request_no = s.reference_id
+     );
+$$;
+
+create or replace function public.purge_reasons_without_packing()
+returns void
+language sql
+security invoker
+set search_path = public
+as $$
+  delete from public.reasons r
+  where not exists (
+    select 1
+    from public.packing_reports p
+    where p.shipment_id = r.shipment_id
+      and p.item = r.no_item
+  );
+$$;

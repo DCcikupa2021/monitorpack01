@@ -4,6 +4,7 @@
   import { fmtAging } from '../aging.js'
   import { taskFilterState } from '../taskFilterState.js'
   import { buildTaskExport, downloadTaskCsv, downloadTaskXlsx } from '../exportTasks.js'
+  import { fetchReasons } from '../reasons.js'
   import Swal from 'sweetalert2'
 
   let rows = $state([])
@@ -171,12 +172,16 @@
   }
 
   onMount(async () => {
-    const pack = await supabase
-      .from('packing_reports')
-      .select(
-        'shipment_id, to_site_name, total_qty, status1, wave_number, comment, type_tr, lottable_2, to_site_id, item, description'
-      )
-      .order('created_at', { ascending: false })
+    // reasons diambil paralel sama query awal; gagal pun list task tetap tampil (badge kosong)
+    const [pack, reasonsRes] = await Promise.all([
+      supabase
+        .from('packing_reports')
+        .select(
+          'shipment_id, to_site_name, total_qty, status1, wave_number, comment, type_tr, lottable_2, to_site_id, item, description'
+        )
+        .order('created_at', { ascending: false }),
+      fetchReasons().catch(() => ({ data: [], error: null }))
+    ])
 
     if (pack.error) {
       error = pack.error.message
@@ -209,6 +214,17 @@
     // lookup sekali: user_name + date_pick (buat aging) di-merge per TR
     const lookByTr = new Map()
     for (const l of look.data ?? []) lookByTr.set(l.reference_id, l)
+
+    // group reasons per shipment_id → daftar teks tampil (buang yang kosong)
+    const reasonByTr = new Map()
+    for (const r of reasonsRes.data ?? []) {
+      const text = r.reason || r.comment || ''
+      if (!text) continue
+      const key = r.shipment_id ?? ''
+      const arr = reasonByTr.get(key)
+      if (arr) arr.push(text)
+      else reasonByTr.set(key, [text])
+    }
 
     // group per TR: Qty = SUM total_qty, field lain = baris pertama per TR
     const byTr = new Map()
@@ -246,6 +262,7 @@
       const st = siteByCode.get(String(g.to_site_id ?? ''))
       g.dk_lk = st?.['DK/LK'] ?? ''
       g.type_kirim = st?.['Type Kirim'] ?? ''
+      g.reasons = reasonByTr.get(key) ?? []
     }
     rows = [...byTr.values()]
     loading = false
@@ -614,6 +631,19 @@
                       <p class="mt-1.5 inline-flex items-center rounded-md border border-blue-100 bg-blue-50 px-1.5 py-0.5 text-xs font-medium text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/50 dark:text-blue-300">
                         {fmtTR(entry.row.shipment_id)}
                       </p>
+                      {#if entry.row.reasons?.length}
+                        <p
+                          class="mt-1.5 flex w-full items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300 truncate"
+                          title={entry.row.reasons.join(' | ')}
+                        >
+                          {#if entry.row.reasons.length > 1}
+                            <strong class="shrink-0 rounded bg-amber-200/70 px-1 text-[10px] font-semibold leading-4 dark:bg-amber-900/70"
+                              >{entry.row.reasons.length} reason</strong
+                            >
+                          {/if}
+                          <span class="truncate">{entry.row.reasons[0]}</span>
+                        </p>
+                      {/if}
                     </div>
                     <div class="shrink-0 text-right">
                       <p class="text-[11px] font-medium uppercase tracking-wide text-gray-400 dark:text-slate-500">Qty</p>
@@ -641,13 +671,14 @@
                 <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">TR</th>
                 <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Qty</th>
                 <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Aging</th>
+                <th scope="col" class="whitespace-nowrap border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-slate-700/70 dark:bg-slate-800/60 dark:text-slate-400">Reason</th>
               </tr>
             </thead>
             <tbody>
               {#each view as entry, i (i)}
                 {#if entry.kind === 'group'}
                   <tr class="bg-blue-50/70 dark:bg-blue-950/40">
-                    <td colspan="4" class="border-b border-gray-100 px-3 py-2 dark:border-slate-700/70">
+                    <td colspan="5" class="border-b border-gray-100 px-3 py-2 dark:border-slate-700/70">
                       <div class="flex items-center justify-between gap-3">
                         <button
                           type="button"
@@ -692,6 +723,23 @@
                     <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700 dark:border-slate-700/70 dark:text-slate-200">{fmtTR(entry.row.shipment_id)}</td>
                     <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm text-gray-700 dark:border-slate-700/70 dark:text-slate-200">{entry.row.qty}</td>
                     <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm dark:border-slate-700/70 {entry.row.date_pick ? 'text-gray-700 dark:text-slate-200' : 'text-gray-300 dark:text-slate-600'}">{fmtAging(entry.row.date_pick, now) || '—'}</td>
+                    <td class="whitespace-nowrap border-b border-gray-100 px-3 py-2 text-sm dark:border-slate-700/70 {entry.row.reasons?.length ? '' : 'text-gray-300 dark:text-slate-600'}">
+                      {#if entry.row.reasons?.length}
+                        <span
+                          class="inline-flex max-w-[180px] items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300 truncate"
+                          title={entry.row.reasons.join(' | ')}
+                        >
+                          {#if entry.row.reasons.length > 1}
+                            <strong class="shrink-0 rounded bg-amber-200/70 px-1 text-[10px] font-semibold leading-4 dark:bg-amber-900/70"
+                              >{entry.row.reasons.length} reason</strong
+                            >
+                          {/if}
+                          <span class="truncate">{entry.row.reasons[0]}</span>
+                        </span>
+                      {:else}
+                        —
+                      {/if}
+                    </td>
                   </tr>
                 {/if}
               {/each}

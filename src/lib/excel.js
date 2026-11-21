@@ -4,6 +4,7 @@ import * as XLSX from 'xlsx'
 const MARKERS = {
   packing: ['WAVE NUMBER', 'SHIPMENT ID'],
   scale: ['INTERNAL ID', 'REFERENCE ID', 'ACTIVITY DATE TIME'],
+  transfer: ['TRANSFER REQUEST NO', 'ORDER DATE'],
 }
 
 const cells = (row) => row.map((c) => (c == null ? '' : String(c).trim()))
@@ -29,9 +30,14 @@ export async function parseWorkbook(file) {
       headerIndex = i
       break
     }
+    if (MARKERS.transfer.every((m) => text.includes(m))) {
+      kind = 'transfer'
+      headerIndex = i
+      break
+    }
   }
   if (headerIndex === -1) {
-    throw new Error('Format file tidak dikenali. Hanya RP36 Packing Report atau Report Transaction History SCALE yang didukung.')
+    throw new Error('Format file tidak dikenali. Hanya RP36 Packing Report, Report Transaction History SCALE, atau RP30 Transfer Request Outstanding yang didukung.')
   }
 
   // buang kolom tanpa header (artefak merge, mis. B:C menyisakan C kosong)

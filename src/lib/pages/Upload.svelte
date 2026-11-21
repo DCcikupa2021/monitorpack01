@@ -6,6 +6,7 @@
   const KIND_LABEL = {
     packing: 'RP36 Packing Report',
     scale: 'Report Transaction History SCALE',
+    transfer: 'RP30 Transfer Request Outstanding',
   }
   const ACCEPT = /\.(xlsx|xls)$/i
   const PREVIEW_CAP = 1000
@@ -103,9 +104,10 @@
   }
 
   function showProcessSuccess(results) {
-    const lines = results.map(
-      (r) => `${KIND_LABEL[r.kind] ?? r.table}: ${r.inserted.toLocaleString('id-ID')} baris`
-    )
+    const lines = results.map((r) => {
+      const base = `${KIND_LABEL[r.kind] ?? r.table}: ${r.inserted.toLocaleString('id-ID')} baris`
+      return r.skipped ? `${base} (${r.skipped.toLocaleString('id-ID')} baris @mitra10 dilewati)` : base
+    })
     Swal.fire({
       icon: 'success',
       title: 'Berhasil',
@@ -335,7 +337,7 @@
 
       <div class="mt-5 border-t border-gray-100 pt-4 dark:border-slate-700/70">
         <p class="text-xs text-gray-500 dark:text-slate-400">
-          File packing menimpa seluruh data lama; file scale di-upsert per internal_id — aman diupload ulang.
+          File packing dan transfer menimpa seluruh data lama; file scale di-upsert per internal_id — aman diupload ulang.
         </p>
         <div class="mt-3 flex justify-end">
           <button

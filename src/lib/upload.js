@@ -1,20 +1,25 @@
 import { supabase } from './supabase.js'
 
-const TABLES = { packing: 'packing_reports', scale: 'scale_transactions' }
+const TABLES = { packing: 'packing_reports', scale: 'scale_transactions', transfer: 'transfer_requests' }
 
-// packing = snapshot penuh (hapus lama, tulis baru); scale = upsert per internal_id, tanpa delete
-const REPLACE_TABLES = new Set(['packing_reports'])
+// packing & transfer = snapshot penuh (hapus lama, tulis baru); scale = upsert per internal_id, tanpa delete
+const REPLACE_TABLES = new Set(['packing_reports', 'transfer_requests'])
 const UPSERT_KEYS = { scale_transactions: 'internal_id' }
 
 // wajib sama persis dengan DDL kolom di migrasi
 const NUMBERS = {
   packing_reports: ['wave_number', 'line_number', 'internal_shipment_line_number', 'internal_shipment_number', 'total_qty', 'weight'],
   scale_transactions: ['internal_id', 'quantity'],
+  transfer_requests: [],
 }
 const DATES = {
   packing_reports: [],
   scale_transactions: ['activity_date_time'],
+  transfer_requests: ['order_date'],
 }
+
+// preview menampilkan semua kolom, hanya ini yang dikirim ke Supabase
+const KEEP = { transfer_requests: ['transfer_request_no', 'order_date'] }
 
 // CHUNK 1000 + kirim paralel: jauh di bawah statement_timeout 8s koneksi PostgREST lama
 const CHUNK = 1000
@@ -67,18 +72,23 @@ export async function processUpload(files) {
     const numbers = new Set(NUMBERS[table])
     const dates = new Set(DATES[table])
     const coerce = (col, v) => (numbers.has(col) ? number(v) : dates.has(col) ? date(v) : text(v))
+    const keep = KEEP[table]
 
     const { data } = await supabase.auth.getSession()
     const created_by = data.session?.user?.id ?? null
 
-    const mapped = rows.map((row) => {
-      const out = {}
-      headers.forEach((h, i) => {
-        out[cols[i]] = coerce(cols[i], row[h])
+    // baris @mitra10.com tidak dikirim ke Supabase (filter ganda: kolom location atau nilai apa pun)
+    const mapped = rows
+      .map((row) => {
+        const out = {}
+        headers.forEach((h, i) => {
+          if (keep && !keep.includes(cols[i])) return
+          out[cols[i]] = coerce(cols[i], row[h])
+        })
+        out.created_by = created_by
+        return out
       })
-      out.created_by = created_by
-      return out
-    })
+      .filter((out) => !Object.values(out).some((v) => typeof v === 'string' && v.includes('@mitra10')))
 
     // pool worker: beberapa chunk jalan bareng, urutan tidak penting
     const offsets = []
@@ -97,7 +107,19 @@ export async function processUpload(files) {
     }
     await Promise.all(Array.from({ length: Math.min(PARALLEL, offsets.length) }, worker))
 
-    results.push({ table, kind, inserted: rows.length })
+    // purge jalan di sini: snapshot transfer_requests baru, jadi keputusan hapus selalu pakai data terbaru
+    if (table === 'transfer_requests') {
+      const { error: purgeError } = await supabase.rpc('purge_scale_without_transfer')
+      if (purgeError) throw new Error('Gagal membersihkan scale_transactions: ' + purgeError.message)
+    }
+
+    // reason yang tidak ada di packing snapshot baru dibuang
+    if (table === 'packing_reports') {
+      const { error: purgeError } = await supabase.rpc('purge_reasons_without_packing')
+      if (purgeError) throw new Error('Gagal membersihkan reasons: ' + purgeError.message)
+    }
+
+    results.push({ table, kind, inserted: mapped.length, skipped: rows.length - mapped.length })
   }
 
   return results
