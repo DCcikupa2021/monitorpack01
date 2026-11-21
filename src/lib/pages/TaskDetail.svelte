@@ -66,7 +66,7 @@
 
   function categoryOf(item) {
     const code = String(item ?? '').slice(0, 2)
-    return CATEGORIES[code] ? `${code} ${CATEGORIES[code]}` : ''
+    return CATEGORIES[code] ?? ''
   }
 
   $effect(() => {

@@ -7,6 +7,7 @@
 
   let rows = $state([])
   let feed = $state([])
+  let catSummary = $state([])
   let loading = $state(true)
   let error = $state('')
   let now = $state(Date.now())
@@ -96,6 +97,32 @@
       feed = f.error ? [] : (f.data ?? [])
     } catch {
       feed = []
+    }
+
+    // summary kategori: gagal/kosong = panel kosong saja, bukan error halaman
+    try {
+      const itemKeys = [...new Set((pack.data ?? []).map((r) => r.item).filter(Boolean))]
+      if (itemKeys.length) {
+        const cats = await supabase
+          .from('item_unit_cost_lookup')
+          .select('item_no, unit_cost, category_name')
+          .in('item_no', itemKeys)
+        if (!cats.error && cats.data?.length) {
+          const m = new Map()
+          for (const c of cats.data) {
+            const name = String(c.category_name ?? '').trim() || 'Tanpa kategori'
+            const g = m.get(name) ?? { name, total: 0, items: new Set() }
+            g.total += Number(c.unit_cost) || 0
+            if (c.item_no) g.items.add(c.item_no)
+            m.set(name, g)
+          }
+          catSummary = [...m.values()]
+            .map((g) => ({ name: g.name, total: g.total, count: g.items.size }))
+            .sort((a, b) => b.total - a.total)
+        }
+      }
+    } catch {
+      catSummary = []
     }
 
     loading = false
@@ -190,6 +217,8 @@
   })
 
   const pctOf = (c, total) => (total ? Math.round((c / total) * 100) : 0)
+
+  let catTotal = $derived(catSummary.reduce((s, c) => s + c.total, 0))
 
   function statusCls(s) {
     const k = String(s ?? '').toLowerCase()
@@ -489,6 +518,37 @@
               </li>
             {/each}
           </ol>
+        {/if}
+      </section>
+
+      <!-- summary category -->
+      <section class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6 dark:border-slate-700/70 dark:bg-slate-900">
+        <div class="mb-4 flex items-center justify-between gap-2">
+          <h2 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Summary Category</h2>
+          <span class="text-sm text-gray-400 dark:text-slate-500">Total unit cost item terpicking</span>
+        </div>
+
+        {#if catSummary.length === 0}
+          {@render panelEmpty('Tidak ada data', 'Belum ada item terpicking.')}
+        {:else}
+          <div class="space-y-3">
+            {#each catSummary as c, i (c.name)}
+              <div class="flex items-center gap-2 text-sm">
+                <span class="h-3 w-3 shrink-0 rounded-sm" style="background: {DONUT_COLORS[i % DONUT_COLORS.length]};"></span>
+                <span class="min-w-0 flex-1 truncate text-gray-700 dark:text-slate-300">{c.name}</span>
+                <span class="shrink-0 text-xs text-gray-400 dark:text-slate-500">{c.count} item</span>
+                <span class="shrink-0 font-semibold text-slate-800 dark:text-slate-100"
+                  >{Number(c.total).toLocaleString('id-ID')}</span
+                >
+              </div>
+            {/each}
+          </div>
+          <div class="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 dark:border-slate-700/70">
+            <span class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-slate-400">Total</span>
+            <span class="text-sm font-semibold text-slate-800 dark:text-slate-100"
+              >{Number(catTotal).toLocaleString('id-ID')}</span
+            >
+          </div>
         {/if}
       </section>
     </div>
